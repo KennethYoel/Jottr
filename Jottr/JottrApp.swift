@@ -9,9 +9,32 @@ import SwiftUI
 
 @main
 struct JottrApp: App {
+    // MARK: Properties
+
+    @StateObject var generationModel = TextGenerationModel()
+    @State var hadLaunched = UserDefaults.standard.bool(forKey: "hadLaunched")
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                // initial view
+                NavigationView {
+                    ContentView(generationModel: generationModel, hadLaunched: $hadLaunched)
+                }
+//                .tabItem {
+//                    Label("Play", systemImage: "play.circle.fill")
+//                    Image(systemName: "play.circle.fill")
+//                    Text("Play")
+//                }
+                // the web of story elements view
+                NavigationView {
+                    InitialView(hadLaunched: $hadLaunched)
+                }
+//                .tabItem {
+//                    Label("Layout", systemImage: "newspaper.circle.fill")
+//                }
+            }
+            .environmentObject(generationModel)
         }
     }
 }

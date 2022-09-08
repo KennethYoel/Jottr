@@ -11,6 +11,19 @@
 		572B12CB28A3BE5800227AB4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12CA28A3BE5800227AB4 /* ContentView.swift */; };
 		572B12CD28A3BE5E00227AB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 572B12CC28A3BE5E00227AB4 /* Assets.xcassets */; };
 		572B12D028A3BE5E00227AB4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 572B12CF28A3BE5E00227AB4 /* Preview Assets.xcassets */; };
+		572B12DC28A3C25900227AB4 /* OpenAI-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 572B12DB28A3C25900227AB4 /* OpenAI-Info.plist */; };
+		572B12E328A3C40600227AB4 /* Jottr.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 572B12E128A3C40600227AB4 /* Jottr.xcdatamodeld */; };
+		572B12E528A3C50B00227AB4 /* OpenAIConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12E428A3C50B00227AB4 /* OpenAIConnector.swift */; };
+		572B12E728A3C97600227AB4 /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12E628A3C97600227AB4 /* OpenAIResponse.swift */; };
+		572B12E928A3CA4200227AB4 /* ModerationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12E828A3CA4200227AB4 /* ModerationResponse.swift */; };
+		572B12ED28A4288000227AB4 /* openairesponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 572B12EC28A4287F00227AB4 /* openairesponse.json */; };
+		5749D76328C7507900AC3C2B /* SessionPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76228C7507900AC3C2B /* SessionPrompt.swift */; };
+		5749D76728C78ED700AC3C2B /* StoryTellerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76628C78ED700AC3C2B /* StoryTellerView.swift */; };
+		574B4D5928A6552700FC47D8 /* OpenAIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */; };
+		5779136B28A4D40D00EF0E9B /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136A28A4D40D00EF0E9B /* InitialView.swift */; };
+		5779136D28A50B5900EF0E9B /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136C28A50B5900EF0E9B /* AccountView.swift */; };
+		5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136E28A51E4E00EF0E9B /* LoginView.swift */; };
+		57EE5B1528BCD35400D961B9 /* TextGenerationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +32,19 @@
 		572B12CA28A3BE5800227AB4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		572B12CC28A3BE5E00227AB4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		572B12CF28A3BE5E00227AB4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		572B12DB28A3C25900227AB4 /* OpenAI-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OpenAI-Info.plist"; sourceTree = "<group>"; };
+		572B12E228A3C40600227AB4 /* Jottr.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Jottr.xcdatamodel; sourceTree = "<group>"; };
+		572B12E428A3C50B00227AB4 /* OpenAIConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIConnector.swift; sourceTree = "<group>"; };
+		572B12E628A3C97600227AB4 /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
+		572B12E828A3CA4200227AB4 /* ModerationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModerationResponse.swift; sourceTree = "<group>"; };
+		572B12EC28A4287F00227AB4 /* openairesponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = openairesponse.json; sourceTree = "<group>"; };
+		5749D76228C7507900AC3C2B /* SessionPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPrompt.swift; sourceTree = "<group>"; };
+		5749D76628C78ED700AC3C2B /* StoryTellerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTellerView.swift; sourceTree = "<group>"; };
+		574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIRequest.swift; sourceTree = "<group>"; };
+		5779136A28A4D40D00EF0E9B /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
+		5779136C28A50B5900EF0E9B /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		5779136E28A51E4E00EF0E9B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,9 +78,12 @@
 			isa = PBXGroup;
 			children = (
 				572B12C828A3BE5800227AB4 /* JottrApp.swift */,
-				572B12CA28A3BE5800227AB4 /* ContentView.swift */,
-				572B12CC28A3BE5E00227AB4 /* Assets.xcassets */,
+				572B12D828A3C13C00227AB4 /* Model */,
+				572B12D728A3C13200227AB4 /* View */,
+				572B12D628A3C11B00227AB4 /* Content */,
+				572B12DA28A3C17900227AB4 /* Assets */,
 				572B12CE28A3BE5E00227AB4 /* Preview Content */,
+				572B12DB28A3C25900227AB4 /* OpenAI-Info.plist */,
 			);
 			path = Jottr;
 			sourceTree = "<group>";
@@ -65,6 +94,88 @@
 				572B12CF28A3BE5E00227AB4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		572B12D628A3C11B00227AB4 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				572B12CA28A3BE5800227AB4 /* ContentView.swift */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
+		572B12D728A3C13200227AB4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				5779136A28A4D40D00EF0E9B /* InitialView.swift */,
+				5749D76628C78ED700AC3C2B /* StoryTellerView.swift */,
+				5779136C28A50B5900EF0E9B /* AccountView.swift */,
+				5779136E28A51E4E00EF0E9B /* LoginView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		572B12D828A3C13C00227AB4 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				572B12E028A3C3A800227AB4 /* Data */,
+				572B12DF28A3C39B00227AB4 /* APIClient */,
+				572B12DE28A3C38800227AB4 /* APIRequest */,
+				572B12DD28A3C37A00227AB4 /* APIResponse */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		572B12D928A3C14A00227AB4 /* ManagedObjectExtensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ManagedObjectExtensions;
+			sourceTree = "<group>";
+		};
+		572B12DA28A3C17900227AB4 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				572B12CC28A3BE5E00227AB4 /* Assets.xcassets */,
+				572B12EC28A4287F00227AB4 /* openairesponse.json */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		572B12DD28A3C37A00227AB4 /* APIResponse */ = {
+			isa = PBXGroup;
+			children = (
+				572B12E628A3C97600227AB4 /* OpenAIResponse.swift */,
+				572B12E828A3CA4200227AB4 /* ModerationResponse.swift */,
+			);
+			path = APIResponse;
+			sourceTree = "<group>";
+		};
+		572B12DE28A3C38800227AB4 /* APIRequest */ = {
+			isa = PBXGroup;
+			children = (
+				574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */,
+			);
+			path = APIRequest;
+			sourceTree = "<group>";
+		};
+		572B12DF28A3C39B00227AB4 /* APIClient */ = {
+			isa = PBXGroup;
+			children = (
+				572B12E428A3C50B00227AB4 /* OpenAIConnector.swift */,
+			);
+			path = APIClient;
+			sourceTree = "<group>";
+		};
+		572B12E028A3C3A800227AB4 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				572B12E128A3C40600227AB4 /* Jottr.xcdatamodeld */,
+				572B12D928A3C14A00227AB4 /* ManagedObjectExtensions */,
+				57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */,
+				5749D76228C7507900AC3C2B /* SessionPrompt.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,7 +236,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				572B12DC28A3C25900227AB4 /* OpenAI-Info.plist in Resources */,
 				572B12D028A3BE5E00227AB4 /* Preview Assets.xcassets in Resources */,
+				572B12ED28A4288000227AB4 /* openairesponse.json in Resources */,
 				572B12CD28A3BE5E00227AB4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,8 +250,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5779136B28A4D40D00EF0E9B /* InitialView.swift in Sources */,
+				572B12E728A3C97600227AB4 /* OpenAIResponse.swift in Sources */,
+				57EE5B1528BCD35400D961B9 /* TextGenerationModel.swift in Sources */,
 				572B12CB28A3BE5800227AB4 /* ContentView.swift in Sources */,
 				572B12C928A3BE5800227AB4 /* JottrApp.swift in Sources */,
+				572B12E328A3C40600227AB4 /* Jottr.xcdatamodeld in Sources */,
+				5779136D28A50B5900EF0E9B /* AccountView.swift in Sources */,
+				572B12E928A3CA4200227AB4 /* ModerationResponse.swift in Sources */,
+				5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */,
+				572B12E528A3C50B00227AB4 /* OpenAIConnector.swift in Sources */,
+				5749D76328C7507900AC3C2B /* SessionPrompt.swift in Sources */,
+				5749D76728C78ED700AC3C2B /* StoryTellerView.swift in Sources */,
+				574B4D5928A6552700FC47D8 /* OpenAIRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +465,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		572B12E128A3C40600227AB4 /* Jottr.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				572B12E228A3C40600227AB4 /* Jottr.xcdatamodel */,
+			);
+			currentVersion = 572B12E228A3C40600227AB4 /* Jottr.xcdatamodel */;
+			path = Jottr.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 572B12BD28A3BE5800227AB4 /* Project object */;
 }
