@@ -11,21 +11,30 @@ import Foundation
 struct StoryTellerView: View {
     // MARK: Properties
     
-    @StateObject var generationModel: TextGenerationModel
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var generationModel: TextGenerationModel
     @State var showingAccountScreen = false
     
     var body: some View {
         ScrollView {
-            Text(generationModel.story)
-                .padding(.horizontal)
+            Text(generationModel.sessionStory)
+                .padding()
                 .foregroundColor(.secondary)
             
             Button("Con't") {
-                generationModel.getTextResponse(moderated: false, sessionStory: generationModel.story)
+                generationModel.getTextResponse(moderated: false, sessionStory: generationModel.sessionStory)
             }
             .buttonStyle(.bordered)
             .cornerRadius(40)
-            .foregroundColor(.white)
+            .foregroundColor(.black)
+            .padding(10)
+            
+            Button("Dismiss") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+            .cornerRadius(40)
+            .foregroundColor(.black)
             .padding(10)
             
 //            Form {
@@ -69,33 +78,33 @@ struct StoryTellerView: View {
     //                    }
     //            }
 //            }
-            .navigationTitle("🖋Jottr")
-            .toolbar {
-                // Edit/Done button for deleting and other perform such as seen above
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        // save the text in TextEditor and then refresh the TextEditor.
-                    } label: {
-                        Label("Restart", systemImage: "plus")
-                    }
-    //                EditButton()
+        .navigationTitle("🖋Jottr")
+        .toolbar {
+            // Edit/Done button for deleting and other perform such as seen above
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    // save the text in TextEditor and then refresh the TextEditor.
+                } label: {
+                    Label("Restart", systemImage: "plus")
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAccountScreen.toggle()
-                    } label: {
-                        Label("Account", systemImage: "wallet.pass")
-                    }
-                }
+//                EditButton()
             }
-            .onTapGesture { hideKeyboardAndSave() }
-            .sheet(isPresented: $showingAccountScreen) {
-                AccountView()
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showingAccountScreen.toggle()
+                } label: {
+                    Label("Account", systemImage: "wallet.pass")
+                }
             }
         }
+        .onTapGesture { hideKeyboardAndSave() }
+        .sheet(isPresented: $showingAccountScreen) {
+            AccountView()
+        }
     }
-    
+}
+
     // MARK: Helper Methods
     
     private func hideKeyboardAndSave() {

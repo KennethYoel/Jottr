@@ -10,19 +10,21 @@ import SwiftUI
 struct ContentView: View {
     // MARK: Properties
     
-    @StateObject var generationModel: TextGenerationModel
-    @Binding var hadLaunched: Bool
-    @State var currentView: String = "first"
+    @EnvironmentObject var generationModel: TextGenerationModel
+//    @Binding var hadLaunched: Bool
+    @State var currentView: String = "first" // use this ti change pages
     @State var showingAccountScreen = false
     
     // MARK: View
     
     var body: some View {
-        if(!hadLaunched) {
-            InitialView(hadLaunched: $hadLaunched)
-        } else {
-            StoryTellerView(generationModel: generationModel)
-        }
+//        LibraryView()
+        StoryCorpusView()
+//        if(!hadLaunched) {
+//            InitialView() //hadLaunched: $hadLaunched
+//        } else {
+//            StoryTellerView(generationModel: generationModel)
+//        }
     }
 }
 
@@ -35,10 +37,11 @@ struct ContentView: View {
  rememberMe in our view.
  */
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigationView {
-//            ContentView(viewModel: textCompletionModel)
-//        }
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            ContentView()
+                .environmentObject(TextGenerationModel())
+        }
+    }
+}

@@ -9,7 +9,7 @@ import Foundation
 
 class TextGenerationModel: ObservableObject {
     @Published var sessionPrompt = [SessionPrompt]()
-    @Published var story: String = ""
+    @Published var sessionStory: String = ""
     
     var primary: SessionPrompt {
         get {
@@ -19,7 +19,7 @@ class TextGenerationModel: ObservableObject {
             return sessionPrompt[0]
         }
         set(newPrompt) {
-            self.sessionPrompt.append(newPrompt)
+            sessionPrompt = [newPrompt]
         }
         
         // unwrap a optional array, if array doesn't have a 0th index then init an empty text
@@ -56,9 +56,9 @@ class TextGenerationModel: ObservableObject {
                 return
             }
             let newText = data.choices[0].completionText
-                DispatchQueue.main.async {
-                    self.story += self.appendToStory(story: self.story, sessionStory: newText)
-                }
+            DispatchQueue.main.async {
+                self.appendToStory(sessionStory: newText)
+            }
         case .failure(let error):
             print(error.localizedDescription)
 //            handleFailureAlert(title: "Error", message: error.localizedDescription)
@@ -71,20 +71,17 @@ class TextGenerationModel: ObservableObject {
 //        present(alertVC, animated: true, completion: nil)
 //    }
     
-    func appendToStory(story: String, sessionStory: String) -> String {
-        var storySoFar: String = "" // this works!!!!
-        if storySoFar == "" {
+    func appendToStory(sessionStory: String) {
+        if self.sessionStory.isEmpty {
             // concatenate the next part of the generated story onto the existing story
-            storySoFar += self.primary.text + sessionStory
+            self.sessionStory += primary.text + sessionStory
         } else {
-            storySoFar += sessionStory
+            self.sessionStory += sessionStory
         }
-        
-        return storySoFar
     }
 }
 
-//  check whether the array is containing the index before accessing the index, if not then nil
+//  check whether the array is containing the requested index before accessing the index, if not then nil
 extension Collection where Indices.Iterator.Element == Index {
     public subscript(safe index: Index) -> Iterator.Element? {
         return (startIndex <= index && index < endIndex) ? self[index] : nil

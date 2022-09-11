@@ -19,7 +19,7 @@ struct JottrApp: App {
             TabView {
                 // initial view
                 NavigationView {
-                    ContentView(generationModel: generationModel, hadLaunched: $hadLaunched)
+                    ContentView() //, hadLaunched: $hadLaunched
                 }
 //                .tabItem {
 //                    Label("Play", systemImage: "play.circle.fill")
@@ -27,9 +27,9 @@ struct JottrApp: App {
 //                    Text("Play")
 //                }
                 // the web of story elements view
-                NavigationView {
-                    InitialView(hadLaunched: $hadLaunched)
-                }
+//                NavigationView {
+//                    StoryCorpusView() //hadLaunched: $hadLaunched
+//                }
 //                .tabItem {
 //                    Label("Layout", systemImage: "newspaper.circle.fill")
 //                }
