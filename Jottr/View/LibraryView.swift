@@ -10,99 +10,102 @@ import SwiftUI
 struct LibraryView: View {
     // MARK: Properties
     
-    @EnvironmentObject var generationModel: TextGenerationModel
-    @State private var showingStoryCorpusScreen = false
+    // have form dismiss itself
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var textGeneration: TextGenerationStore
+//    @State private var showingLoginScreen = false
+    @State private var isHidden: Bool = false
+    @State private var genre = ""
+    @State private var review = ""
+    
+    let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
-        VStack {
-            List {
-                /*
-                 We don’t need to provide an identifier for the ForEach because all
-                 Core Data’s managed object class conform to Identifiable
-                 automatically, but things are trickier when it comes to creating
-                 views inside the ForEach.
-                 */
-                ForEach(generationModel.sessionPrompt) { story in
+        Form {
+            Section {
+                // a link to a list of stories
+                NavigationLink {
+                    StoryCollectionsView()
+                } label: {
+                    Label("Your Narratives", systemImage: "archivebox")
+                        .font(.system(.body, design: .serif))
+                }
+                .buttonStyle(.plain)
+                
+                // a link to a list of premises written by the user
+                NavigationLink {
+                    StoryCollectionsView()
+                } label: {
+                    Label("Your Premises", systemImage: "highlighter")
+                        .font(.system(.body, design: .serif))
+                }
+                .buttonStyle(.plain)
+                
+                // a link to a list stories the user deleted
+                HStack {
+                    Image(systemName: "trash")
+                    Text("Trash")
+                        .font(.system(.body, design: .serif))
+                }
+            }
+            
+            Section {
+                if !isHidden {
+                    TextEditor(text: $review)
                     /*
-                     All the properties of our Core Data entity are optional, which
-                     means we need to make heavy use of nil coalescing in order to
-                     make our code work.
+                     custom ui component-the result is much nicer to use: there’s no need
+                     to tap into a detail view with a picker here, because star ratings are
+                     more natural and more common.
                      */
-                    NavigationLink {
-                        StoryTellerView()
-//                        Text(book.title ?? "Unknown Title")
-                    } label: {
-                        HStack {
-//                                EmojiRatingView(rating: book.rating)
-//                                    .font(.largeTitle)
-                            
-                            VStack(alignment: .leading) {
-                                Text(story.text)
-                                    .font(.headline)
-                                
-//                                    Text(book.author ?? "Unknown Author")
-//                                        .foregroundColor(.secondary)
+    //                RatingView(rating: $rating)
+    //                    Picker("Rating", selection: $rating) {
+    //                        ForEach(0..<6) {
+    //                            Text(String($0))
+    //                        }
+    //                    }
+                }
+            } header: {
+                HStack {
+                    Text("INTRODUCTION")
+                        .font(.system(.caption, design: .serif))
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding([.top, .bottom], 5)
+                    Spacer()
+                    Text("...")
+                        .font(.system(.caption, design: .serif))
+                        .contextMenu {
+                            if !isHidden {
+                                Button {
+                                    isHidden.toggle()
+                                } label: {
+                                    Label("Expand", systemImage: "rectangle.expand.vertical")
+                                }
+                            } else {
+                                Button {
+                                    isHidden.toggle()
+                                } label: {
+                                    Label("Collapse", systemImage: "rectangle.compress.vertical")
+                                }
                             }
                         }
-                    }
                 }
-                // swipe to delete
-                .onDelete(perform: deleteBooks)
             }
-            .navigationTitle("🖋Jottr")
-            .toolbar {
-                // Edit/Done button for deleting and other perform such as seen above
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button {
-                            showingStoryCorpusScreen.toggle()
-                        } label: {
-                            Label("Add Book", systemImage: "plus")
-                        }
-                        Button {
-                            let _ = 1
-                        } label: {
-                            Text("Radial")
-                            Image(systemName: "arrow.up.and.down.circle")
-                        }
-                    } label: {
-                         Text("Style")
-                         Image(systemName: "tag.circle")
-                    }
-                    
-//                    Button {
-//                        showingStoryCorpusScreen.toggle()
-//                    } label: {
-//                        Label("Add Book", systemImage: "plus")
-//                    }
-                }
-            } // next screen of adding a book review is shown when showingAddScreen is true
-            .fullScreenCover(isPresented: $showingStoryCorpusScreen) { StoryCorpusView() }
-            //.sheet
-        }
-    }
-    
-    func deleteBooks(at offsets: IndexSet) {
-//        for offset in offsets {
-//            let book = books[offset]
-//            // delete from in memory storage
-//            moc.delete(book)
-//        }
-//        // write the changes out to persistent storage
-//        do {
-//            try moc.save()
-//        } catch {
-//            print(error.localizedDescription)
-//        }
-    }
-}
-
-struct LibraryView_Previews: PreviewProvider {
-    static var previews: some View {
-        LibraryView()
+            
+//            Section {
+//                Button("Save") {
+                    // add the book
+//                    let newBook = Book(context: moc)
+//                    newBook.id = UUID()
+//                    newBook.title = title
+//                    newBook.author = author
+//                    newBook.rating = Int16(rating)
+//                    newBook.genre = genre
+//                    newBook.review = review
+//                    
+//                    try? moc.save()
+//                    dismiss()
+//                }
+//            }
+        } // MARK: Form Modyfiers
     }
 }

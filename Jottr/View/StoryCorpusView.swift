@@ -11,7 +11,7 @@ import SwiftUI
 struct StoryCorpusView: View {
     // MARK: Properties
     
-    @EnvironmentObject var generationModel: TextGenerationModel
+    @EnvironmentObject var textGeneration: TextGenerationStore
 //    @StateObject var loginVM = LoginViewModel()
 //    @Binding var hadLaunched: Bool
     @State var currentView: String = "firstPage"
@@ -77,14 +77,14 @@ struct StoryCorpusView: View {
                 
                 Text("**Writer's Scribble**")
                     .padding(.leading)
-                CustomTextEditor(placeholder: scribblePlaceholder, text: $generationModel.primary.text)
+                CustomTextEditor(placeholder: scribblePlaceholder, text: $textGeneration.primary.text)
                     .border(Color.black, width: 2)
                     .cornerRadius(11)
                     .foregroundColor(.primary)
                     .font(.custom("HelveticaNeue", size: 13))
                     .padding(.horizontal)
-                    .onReceive(Just(generationModel.primary.text)) { _ in limitText(textLimit) }
-                    .onChange(of: generationModel.primary.text) { _ in detector.send() }
+                    .onReceive(Just(textGeneration.primary.text)) { _ in limitText(textLimit) }
+                    .onChange(of: textGeneration.primary.text) { _ in detector.send() }
                     .onReceive(publisher) { save() }
                 
                 Text("**Banned Words**")
@@ -99,8 +99,8 @@ struct StoryCorpusView: View {
                 
                 Button("Do Write") {
                     // TODO: need to make sure this is added once, maybe use boolean
-                    let text = promptDesign(premise, generationModel.primary.text)
-                    generationModel.getTextResponse(moderated: false, sessionStory: text)
+                    let text = promptDesign(premise, textGeneration.primary.text)
+                    textGeneration.getTextResponse(moderated: false, sessionStory: text)
 //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
                 }
             }
@@ -112,8 +112,8 @@ struct StoryCorpusView: View {
                     
                     Button("Write It?") {
                         // TODO: need to make sure this is added once, maybe use boolean
-                        let text = promptDesign(premise, generationModel.primary.text)
-                        generationModel.getTextResponse(moderated: false, sessionStory: text)
+                        let text = promptDesign(premise, textGeneration.primary.text)
+                        textGeneration.getTextResponse(moderated: false, sessionStory: text)
     //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
                         self.currentView = "firstPage"
     //                    self.hadLaunched = true
@@ -144,9 +144,9 @@ struct StoryCorpusView: View {
     
     //    // function to keep text length in limits
     private func limitText(_ upper: Int) {
-        if premise.count & generationModel.primary.text.count > upper {
+        if premise.count & textGeneration.primary.text.count > upper {
             premise = String(premise.prefix(upper))
-            generationModel.sessionPrompt[0].text = String(generationModel.primary.text.prefix(upper))
+            textGeneration.sessionPrompt[0].text = String(textGeneration.primary.text.prefix(upper))
         }
     }
     

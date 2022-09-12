@@ -11,7 +11,7 @@ import SwiftUI
 struct JottrApp: App {
     // MARK: Properties
 
-    @StateObject var generationModel = TextGenerationModel()
+    @StateObject var textGeneration = TextGenerationStore()
     @State var hadLaunched = UserDefaults.standard.bool(forKey: "hadLaunched")
     
     var body: some Scene {
@@ -21,11 +21,9 @@ struct JottrApp: App {
                 NavigationView {
                     ContentView() //, hadLaunched: $hadLaunched
                 }
-//                .tabItem {
-//                    Label("Play", systemImage: "play.circle.fill")
-//                    Image(systemName: "play.circle.fill")
-//                    Text("Play")
-//                }
+                .tabItem {
+                    Image(systemName: "doc.text.magnifyingglass")
+                }
                 // the web of story elements view
 //                NavigationView {
 //                    StoryCorpusView() //hadLaunched: $hadLaunched
@@ -34,7 +32,7 @@ struct JottrApp: App {
 //                    Label("Layout", systemImage: "newspaper.circle.fill")
 //                }
             }
-            .environmentObject(generationModel)
+            .environmentObject(textGeneration)
         }
     }
 }

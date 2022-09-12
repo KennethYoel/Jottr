@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5729771128CF358800E465EF /* StoryCollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5729771028CF358800E465EF /* StoryCollectionsView.swift */; };
 		572B12C928A3BE5800227AB4 /* JottrApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12C828A3BE5800227AB4 /* JottrApp.swift */; };
 		572B12CB28A3BE5800227AB4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B12CA28A3BE5800227AB4 /* ContentView.swift */; };
 		572B12CD28A3BE5E00227AB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 572B12CC28A3BE5E00227AB4 /* Assets.xcassets */; };
@@ -24,10 +25,11 @@
 		5779136D28A50B5900EF0E9B /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136C28A50B5900EF0E9B /* AccountView.swift */; };
 		5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136E28A51E4E00EF0E9B /* LoginView.swift */; };
 		57D3BF6D28CBABDA009A710A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D3BF6C28CBABDA009A710A /* LibraryView.swift */; };
-		57EE5B1528BCD35400D961B9 /* TextGenerationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */; };
+		57EE5B1528BCD35400D961B9 /* TextGenerationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE5B1428BCD35400D961B9 /* TextGenerationStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5729771028CF358800E465EF /* StoryCollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCollectionsView.swift; sourceTree = "<group>"; };
 		572B12C528A3BE5800227AB4 /* Jottr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jottr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		572B12C828A3BE5800227AB4 /* JottrApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JottrApp.swift; sourceTree = "<group>"; };
 		572B12CA28A3BE5800227AB4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -46,7 +48,7 @@
 		5779136C28A50B5900EF0E9B /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		5779136E28A51E4E00EF0E9B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		57D3BF6C28CBABDA009A710A /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
-		57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationModel.swift; sourceTree = "<group>"; };
+		57EE5B1428BCD35400D961B9 /* TextGenerationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGenerationStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +83,8 @@
 			children = (
 				572B12C828A3BE5800227AB4 /* JottrApp.swift */,
 				572B12D828A3C13C00227AB4 /* Model */,
+				572B12D628A3C11B00227AB4 /* Store */,
 				572B12D728A3C13200227AB4 /* View */,
-				572B12D628A3C11B00227AB4 /* Content */,
 				572B12DA28A3C17900227AB4 /* Assets */,
 				572B12CE28A3BE5E00227AB4 /* Preview Content */,
 				572B12DB28A3C25900227AB4 /* OpenAI-Info.plist */,
@@ -98,18 +100,20 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		572B12D628A3C11B00227AB4 /* Content */ = {
+		572B12D628A3C11B00227AB4 /* Store */ = {
 			isa = PBXGroup;
 			children = (
-				572B12CA28A3BE5800227AB4 /* ContentView.swift */,
+				57EE5B1428BCD35400D961B9 /* TextGenerationStore.swift */,
 			);
-			path = Content;
+			path = Store;
 			sourceTree = "<group>";
 		};
 		572B12D728A3C13200227AB4 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				572B12CA28A3BE5800227AB4 /* ContentView.swift */,
 				57D3BF6C28CBABDA009A710A /* LibraryView.swift */,
+				5729771028CF358800E465EF /* StoryCollectionsView.swift */,
 				5779136A28A4D40D00EF0E9B /* StoryCorpusView.swift */,
 				5749D76628C78ED700AC3C2B /* StoryTellerView.swift */,
 				5779136C28A50B5900EF0E9B /* AccountView.swift */,
@@ -175,7 +179,6 @@
 			children = (
 				572B12E128A3C40600227AB4 /* Jottr.xcdatamodeld */,
 				572B12D928A3C14A00227AB4 /* ManagedObjectExtensions */,
-				57EE5B1428BCD35400D961B9 /* TextGenerationModel.swift */,
 				5749D76228C7507900AC3C2B /* SessionPrompt.swift */,
 			);
 			path = Data;
@@ -256,7 +259,7 @@
 				57D3BF6D28CBABDA009A710A /* LibraryView.swift in Sources */,
 				5779136B28A4D40D00EF0E9B /* StoryCorpusView.swift in Sources */,
 				572B12E728A3C97600227AB4 /* OpenAIResponse.swift in Sources */,
-				57EE5B1528BCD35400D961B9 /* TextGenerationModel.swift in Sources */,
+				57EE5B1528BCD35400D961B9 /* TextGenerationStore.swift in Sources */,
 				572B12CB28A3BE5800227AB4 /* ContentView.swift in Sources */,
 				572B12C928A3BE5800227AB4 /* JottrApp.swift in Sources */,
 				572B12E328A3C40600227AB4 /* Jottr.xcdatamodeld in Sources */,
@@ -265,6 +268,7 @@
 				5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */,
 				572B12E528A3C50B00227AB4 /* OpenAIConnector.swift in Sources */,
 				5749D76328C7507900AC3C2B /* SessionPrompt.swift in Sources */,
+				5729771128CF358800E465EF /* StoryCollectionsView.swift in Sources */,
 				5749D76728C78ED700AC3C2B /* StoryTellerView.swift in Sources */,
 				574B4D5928A6552700FC47D8 /* OpenAIRequest.swift in Sources */,
 			);

@@ -12,17 +12,17 @@ struct StoryTellerView: View {
     // MARK: Properties
     
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var generationModel: TextGenerationModel
+    @EnvironmentObject var textGeneration: TextGenerationStore
     @State var showingAccountScreen = false
     
     var body: some View {
         ScrollView {
-            Text(generationModel.sessionStory)
+            Text(textGeneration.sessionStory)
                 .padding()
                 .foregroundColor(.secondary)
             
             Button("Con't") {
-                generationModel.getTextResponse(moderated: false, sessionStory: generationModel.sessionStory)
+                textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
             }
             .buttonStyle(.bordered)
             .cornerRadius(40)
