@@ -15,40 +15,14 @@ struct ContentView: View {
     @State var currentView: String = "first" // use this ti change pages
     @State var showingAccountScreen = false
     @State private var showingLoginScreen = false
+    @Binding var image: Image
+    @Binding var inputImage: UIImage?
     
     // MARK: View
     
     var body: some View {
-        LibraryView()
+        LibraryView(image: $image, inputImage: $inputImage)
             .navigationTitle("🖋Jottr")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink {
-                        StoryCorpusView()
-                    } label: {
-                        Label("Create Book", systemImage: "plus")
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button {
-                            showingLoginScreen.toggle()
-                        } label: {
-                            Label("Login", systemImage: "lanyardcard")
-                        }
-                        Button {
-                            let _ = 1
-                        } label: {
-                            Text("Something")
-                            Image(systemName: "arrow.up.and.down.circle")
-                        }
-                    } label: {
-                         Image(systemName: "gearshape.2")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingLoginScreen) { LoginView() }
 //        StoryCorpusView()
 //        if(!hadLaunched) {
 //            InitialView() //hadLaunched: $hadLaunched
@@ -67,12 +41,14 @@ struct ContentView: View {
  rememberMe in our view.
  */
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            ContentView()
-                .environmentObject(TextGenerationStore())
-        }
-        .previewInterfaceOrientation(.portrait)
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    @Binding var image: Image
+//    
+//    static var previews: some View {
+//        NavigationView {
+//            ContentView(image: $image)
+//                .environmentObject(TextGenerationStore())
+//        }
+//        .previewInterfaceOrientation(.portrait)
+//    }
+//}

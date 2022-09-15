@@ -7,6 +7,31 @@
 
 import SwiftUI
 
+struct HideSectionView: View {
+    // MARK: Properties
+    
+    @Binding var isHidden: Bool
+    
+    var body: some View {
+        Menu("...") {
+            if !isHidden {
+                Button {
+                    isHidden.toggle()
+                } label: {
+                    Label("Collapse", systemImage: "rectangle.compress.vertical")
+                }
+            } else {
+                Button {
+                    isHidden.toggle()
+                } label: {
+                    Label("Expand", systemImage: "rectangle.expand.vertical")
+                }
+            }
+        }
+        .font(.system(.caption, design: .serif))
+    }
+}
+
 struct LibraryView: View {
     // MARK: Properties
     
@@ -14,9 +39,11 @@ struct LibraryView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var textGeneration: TextGenerationStore
 //    @State private var showingLoginScreen = false
-    @State private var isHidden: Bool = false
+    @State var isHidden: Bool = false
     @State private var genre = ""
     @State private var review = ""
+    @Binding var image: Image
+    @Binding var inputImage: UIImage?
     
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
@@ -51,49 +78,33 @@ struct LibraryView: View {
             
             Section {
                 if !isHidden {
-                    TextEditor(text: $review)
-                    /*
-                     custom ui component-the result is much nicer to use: there’s no need
-                     to tap into a detail view with a picker here, because star ratings are
-                     more natural and more common.
-                     */
-    //                RatingView(rating: $rating)
-    //                    Picker("Rating", selection: $rating) {
-    //                        ForEach(0..<6) {
-    //                            Text(String($0))
-    //                        }
-    //                    }
+                    image
+                        .resizable()
+                        .scaledToFit()
+                }
+                
+                Button("Save Image") {
+                    guard let inputImage = inputImage else { return }
+                    
+                    let imageSaver = ImageSaver()
+                    imageSaver.writeToPhotoAlbum(image: inputImage)
                 }
             } header: {
                 HStack {
                     Text("INTRODUCTION")
                         .font(.system(.caption, design: .serif))
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .padding([.top, .bottom], 5)
+    //                        .frame(maxWidth: .infinity, alignment: .leading)
+    //                        .padding([.top, .bottom], 5)
+                    
                     Spacer()
-                    Text("...")
-                        .font(.system(.caption, design: .serif))
-                        .contextMenu {
-                            if !isHidden {
-                                Button {
-                                    isHidden.toggle()
-                                } label: {
-                                    Label("Expand", systemImage: "rectangle.expand.vertical")
-                                }
-                            } else {
-                                Button {
-                                    isHidden.toggle()
-                                } label: {
-                                    Label("Collapse", systemImage: "rectangle.compress.vertical")
-                                }
-                            }
-                        }
+                    
+                    HideSectionView(isHidden: $isHidden)
                 }
             }
             
 //            Section {
 //                Button("Save") {
-                    // add the book
+                // add the book
 //                    let newBook = Book(context: moc)
 //                    newBook.id = UUID()
 //                    newBook.title = title
@@ -101,11 +112,22 @@ struct LibraryView: View {
 //                    newBook.rating = Int16(rating)
 //                    newBook.genre = genre
 //                    newBook.review = review
-//                    
+//
 //                    try? moc.save()
 //                    dismiss()
 //                }
 //            }
         } // MARK: Form Modyfiers
+        .safeAreaInset(edge: .bottom, alignment: .trailing) {
+                Button {
+                    print("Search")
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.headline)
+                        .symbolRenderingMode(.multicolor)
+                        .padding(.trailing)
+                }
+                .accessibilityLabel("Show help")
+        }
     }
 }

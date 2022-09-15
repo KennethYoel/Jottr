@@ -42,5 +42,7 @@ struct AccountView: View {
                 LoginView()
             }
         }
+        .navigationTitle("Account")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

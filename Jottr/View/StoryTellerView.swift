@@ -78,7 +78,8 @@ struct StoryTellerView: View {
     //                    }
     //            }
 //            }
-        .navigationTitle("🖋Jottr")
+        .navigationTitle("StoryTeller")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             // Edit/Done button for deleting and other perform such as seen above
             ToolbarItem(placement: .navigationBarLeading) {

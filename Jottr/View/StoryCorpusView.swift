@@ -15,7 +15,12 @@ struct StoryCorpusView: View {
 //    @StateObject var loginVM = LoginViewModel()
 //    @Binding var hadLaunched: Bool
     @State var currentView: String = "firstPage"
+    
     @State private var isShowingPopover: Bool = false
+    
+    @State var alertUser: Bool = false
+    var title: String = ""
+    var message: String = ""
     
     let premisePlaceholder: String = """
     Start with the premise, which is your entire story condensed to a single sentence
@@ -60,7 +65,7 @@ struct StoryCorpusView: View {
                     Button("Show Popover", action: {
                         self.isShowingPopover = true
                     })
-                        .popover(isPresented: $isShowingPopover) {
+                    .popover(isPresented: $isShowingPopover) {
                         PopoverView()
 //                        Text("Your content here")
 //                            .font(.headline)
@@ -69,7 +74,7 @@ struct StoryCorpusView: View {
                 }
                 CustomTextEditor(placeholder: premisePlaceholder, text: $premise)
                     .border(Color.gray, width: 2)
-                    .cornerRadius(11)
+//                    .cornerRadius(11)
                     .foregroundColor(.primary)
                     .font(.custom("HelveticaNeue", size: 13))
                     .padding(.horizontal)
@@ -79,7 +84,7 @@ struct StoryCorpusView: View {
                     .padding(.leading)
                 CustomTextEditor(placeholder: scribblePlaceholder, text: $textGeneration.primary.text)
                     .border(Color.black, width: 2)
-                    .cornerRadius(11)
+//                    .cornerRadius(11)
                     .foregroundColor(.primary)
                     .font(.custom("HelveticaNeue", size: 13))
                     .padding(.horizontal)
@@ -91,7 +96,7 @@ struct StoryCorpusView: View {
                     .padding(.leading)
                 TextField(bannedPlaceholder, text: $bannedWord)
                     .border(Color.black, width: 2)
-                    .cornerRadius(11)
+//                    .cornerRadius(11)
                     .foregroundColor(.primary)
                     .font(.custom("HelveticaNeue", size: 13))
                     .padding(.horizontal)
@@ -101,32 +106,51 @@ struct StoryCorpusView: View {
                     // TODO: need to make sure this is added once, maybe use boolean
                     let text = promptDesign(premise, textGeneration.primary.text)
                     textGeneration.getTextResponse(moderated: false, sessionStory: text)
+                    showingStoryTellerScreen.toggle()
 //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
                 }
+                .buttonStyle(.bordered)
             }
             .transition(.opacity)
             .navigationTitle("Prompt Settings")
             .toolbar {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Spacer()
-                    
-                    Button("Write It?") {
-                        // TODO: need to make sure this is added once, maybe use boolean
-                        let text = promptDesign(premise, textGeneration.primary.text)
-                        textGeneration.getTextResponse(moderated: false, sessionStory: text)
-    //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
-                        self.currentView = "firstPage"
-    //                    self.hadLaunched = true
-                        showingStoryTellerScreen.toggle()
+                ToolbarItemGroup(placement: .keyboard) {
+                    Button("Click Me!") {
+                        debugPrint("Clicked")
                     }
-    //                .buttonStyle(.bordered)
-                    .tint(.indigo)
-                    .buttonStyle(.borderedProminent)
+                }
+                
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button("Click Me!") {
+                        debugPrint("Clicked")
+                    }
                 }
             }
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItemGroup(placement: .bottomBar) {
+//                    Spacer()
+//                    
+//                    Button("Write It?") {
+//                        // TODO: need to make sure this is added once, maybe use boolean
+//                        let text = promptDesign(premise, textGeneration.primary.text)
+//                        textGeneration.getTextResponse(moderated: false, sessionStory: text)
+//    //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
+//                        self.currentView = "firstPage"
+//    //                    self.hadLaunched = true
+//                        showingStoryTellerScreen.toggle()
+//                    }
+//    //                .buttonStyle(.bordered)
+//                    .tint(.indigo)
+//                    .buttonStyle(.borderedProminent)
+//                }
+//            }
         }
         // next screen of adding a book review is shown when showingAddScreen is true
         .sheet(isPresented: $showingStoryTellerScreen) { StoryTellerView() }
+        .alert(title, isPresented: $alertUser, presenting: message) {_ in
+            Button("OK") {}
+        }
     }
     
     // MARK: Helper Methods
@@ -186,6 +210,8 @@ struct CustomTextEditor: View {
                 TextEditor(text: $text)
                     .frame(minHeight: 150, maxHeight: 300)
                     .opacity(text.isEmpty ? 0.85 : 1)
+                    .textFieldStyle(.roundedBorder)
+                
                 Spacer()
             }
             .onTapGesture { hideKeyboard() }

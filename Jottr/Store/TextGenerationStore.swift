@@ -60,16 +60,16 @@ class TextGenerationStore: ObservableObject {
                 self.appendToStory(sessionStory: newText)
             }
         case .failure(let error):
-            print(error.localizedDescription)
-//            handleFailureAlert(title: "Error", message: error.localizedDescription)
+//            print(error.localizedDescription)
+            handleFailureAlert(title: "Error", message: error.localizedDescription)
         }
     }
 
-//    func handleFailureAlert(title: String, message: String) {
-//        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//        present(alertVC, animated: true, completion: nil)
-//    }
+    func handleFailureAlert(title: String, message: String) {
+        var showAlert = AlertView()
+        showAlert.title = title
+        showAlert.message = message
+    }
     
     func appendToStory(sessionStory: String) {
         if self.sessionStory.isEmpty {
