@@ -38,10 +38,14 @@ struct LibraryView: View {
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var textGeneration: TextGenerationStore
+    
 //    @State private var showingLoginScreen = false
-    @State var isHidden: Bool = false
+    @State private var isHidden: Bool = false
+    @State private var isShowingStoryCollectionsView = false
     @State private var genre = ""
     @State private var review = ""
+    
+    @Binding var currentView: LoadingState
     @Binding var image: Image
     @Binding var inputImage: UIImage?
     
@@ -51,8 +55,9 @@ struct LibraryView: View {
         Form {
             Section {
                 // a link to a list of stories
-                NavigationLink {
-                    StoryCollectionsView()
+                Button {
+                    self.currentView = .collection
+//                    StoryCollectionsView()
                 } label: {
                     Label("Your Narratives", systemImage: "archivebox")
                         .font(.system(.body, design: .serif))
@@ -61,7 +66,7 @@ struct LibraryView: View {
                 
                 // a link to a list of premises written by the user
                 NavigationLink {
-                    StoryCollectionsView()
+                    StoryCollectionsView(currentView: $currentView)
                 } label: {
                     Label("Your Premises", systemImage: "highlighter")
                         .font(.system(.body, design: .serif))
@@ -118,16 +123,6 @@ struct LibraryView: View {
 //                }
 //            }
         } // MARK: Form Modyfiers
-        .safeAreaInset(edge: .bottom, alignment: .trailing) {
-                Button {
-                    print("Search")
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(.headline)
-                        .symbolRenderingMode(.multicolor)
-                        .padding(.trailing)
-                }
-                .accessibilityLabel("Show help")
-        }
+        .navigationTitle("🖋Jottr")
     }
 }

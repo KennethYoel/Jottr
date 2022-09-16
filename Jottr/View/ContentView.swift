@@ -7,28 +7,34 @@
 
 import SwiftUI
 
+enum LoadingState {
+    case library, collection, storyTeller
+}
+
 struct ContentView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGenerationStore
 //    @Binding var hadLaunched: Bool
-    @State var currentView: String = "first" // use this ti change pages
-    @State var showingAccountScreen = false
+    
+    @State private var currentView: LoadingState = .library
+    @State private var showingAccountScreen = false
     @State private var showingLoginScreen = false
+    
     @Binding var image: Image
     @Binding var inputImage: UIImage?
     
     // MARK: View
     
     var body: some View {
-        LibraryView(image: $image, inputImage: $inputImage)
-            .navigationTitle("🖋Jottr")
-//        StoryCorpusView()
-//        if(!hadLaunched) {
-//            InitialView() //hadLaunched: $hadLaunched
-//        } else {
-//            StoryTellerView(generationModel: generationModel)
-//        }
+        switch currentView {
+        case .library:
+            LibraryView(currentView: $currentView, image: $image, inputImage: $inputImage)
+        case .collection:
+            StoryCollectionsView(currentView: $currentView)
+        case .storyTeller:
+            StoryTellerView()
+        }
     }
 }
 

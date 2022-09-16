@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-struct StoryCorpusView: View {
+struct PromptSettingsView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGenerationStore

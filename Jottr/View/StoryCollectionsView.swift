@@ -11,7 +11,10 @@ struct StoryCollectionsView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGenerationStore
+    
     @State private var isShareViewPresented: Bool = false
+    
+    @Binding var currentView: LoadingState
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -60,39 +63,26 @@ struct StoryCollectionsView: View {
                 }
                 // swipe to delete
                 .onDelete(perform: deleteStory)
-            }
-            .navigationTitle("Your Narratives")
-//            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    NavigationLink {
-                        StoryCorpusView()
-                    } label: {
-                        Label("Create Story", systemImage: "plus")
-                    }
-                    
-                    Menu {
-                        Button {
-                            debugPrint("Export")
-                        } label: {
-                            Label("Export", systemImage: "arrow.up.doc")
-                        }
-                        Button {
-                            isShareViewPresented = true
-                        } label: {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                    } label: {
-                        Label("Options", systemImage: "ellipsis.circle")
-                    }
-                }
-            } // the sheet below is shown when isShareViewPresented is true
+            }  // the sheet below is shown when isShareViewPresented is true
             .sheet(isPresented: $isShareViewPresented, onDismiss: {
                 print("Dismiss")
             }, content: {
                 ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
             })
             //.fullScreenCover
+        } // Complete Works -> Opera Omnia
+        .navigationTitle("Collection")
+//            .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                HStack {
+                    Image(systemName: "chevron.backward")
+                    Button("Library") {
+                        self.currentView = .library
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
     
