@@ -7,12 +7,17 @@
 
 import SwiftUI
 
+extension Color {
+    static let offWhite = Color(red: 255 / 255, green: 255 / 255, blue: 235 / 255)
+}
+
 struct MainView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGenerationStore
+    @EnvironmentObject var textGeneration: TextGeneration
     @Binding var hadLaunched: Bool
     
+    @State private var showingAddStoryScreen = false
     @State private var showingLoginScreen = false
     @State private var showingSearchScreen = false
     
@@ -26,21 +31,21 @@ struct MainView: View {
             ContentView(image: $image, inputImage: $inputImage) //, hadLaunched: $hadLaunched
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: StoryTellerView()) {
+                        NavigationLink(destination: StoryEditorView(currentView: .constant(.storyEditor))) {
                             Label("New Story", systemImage: "square.and.pencil")
                         }
                         
                         Menu {
+                            Button { // this belongs with create a story view
+                                showingAddStoryScreen.toggle()
+                            } label: {
+                                Label("Prompt Editor", systemImage: "doc.badge.gearshape")
+                            }
+                            
                             Button {
                                 showingLoginScreen.toggle()
                             } label: {
                                 Label("Login", systemImage: "lanyardcard")
-                            }
-                            
-                            NavigationLink { // this belongs with create a story view
-                                PromptSettingsView()
-                            } label: {
-                                Label("Prompt Settings", systemImage: "doc.badge.gearshape")
                             }
                             
                             Button {
@@ -56,18 +61,26 @@ struct MainView: View {
                 }
                 .onChange(of: inputImage) { _ in loadImage() }
                 .safeAreaInset(edge: .bottom, alignment: .trailing) {
-                    Button {
-                        showingSearchScreen.toggle()
-                    } label: {
-                        Image(systemName: "magnifyingglass")
-                            .font(.largeTitle)
-                            .symbolRenderingMode(.multicolor)
+                    ZStack {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 45, height: 45)
                             .padding([.trailing], 25)
+                        Button {
+                            showingSearchScreen.toggle()
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .renderingMode(.original)
+                                .font(.headline)
+                                .padding([.trailing], 25)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Show Search")
                     }
-                    .accessibilityLabel("Show Search")
                 }
-                .sheet(isPresented: $showingSearchScreen) { SearchView() }
+                .sheet(isPresented: $showingAddStoryScreen) { PromptEditorView() }
                 .sheet(isPresented: $showingLoginScreen) { LoginView() }
+                .sheet(isPresented: $showingSearchScreen) { SearchView() }
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $inputImage) }
         }
     }

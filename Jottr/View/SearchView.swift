@@ -10,8 +10,13 @@ import SwiftUI
 struct SearchView: View {
     // MARK: Properties
     
+    @EnvironmentObject var textGeneration: TextGeneration
+    @Environment(\.isSearching) private var isSearching: Bool
+    @Environment(\.dismissSearch) private var dismissSearch
+    @Environment(\.dismiss) private var dismiss
+    
     let workOfFiction = ["Holly", "Josh", "Rhonda", "Ted"]
-    @State private var searchDocs = ""
+    @State private var searchQuery = ""
     
     var body: some View {
         NavigationView {
@@ -22,23 +27,38 @@ struct SearchView: View {
                     }
                 }
             }
-            .searchable(text: $searchDocs, prompt: "Own Your Truth")
-            .navigationTitle("All")
-//            .navigationViewStyle(.inline)
+            .searchable(text: $searchQuery, placement:  .navigationBarDrawer(displayMode: .always), prompt: "Seek It") {
+                //provide tappable suggestions as the user types
+                ForEach(searchResults, id: \.self) { result in
+//                    Label(suggestion.title,  image: suggestion.image)
+//                                    .searchCompletion(suggestion.text)
+                    Text("Are you looking for \(result)?").searchCompletion(result)
+                }
+            }
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Close") {
+                        dismissSearch()
+                        dismiss()
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
     
     var searchResults: [String] {
-            if searchDocs.isEmpty {
-                return workOfFiction
-            } else {
-                return workOfFiction.filter { $0.contains(searchDocs) }
-            }
+        if searchQuery.isEmpty {
+            return workOfFiction // [textGeneration.primary.text]
+        } else {
+            /*
+             localizedCaseInsensitiveContains()
+             lets us check any part of the search strings, without worrying about
+             uppercase or lowercase letters [textGeneration.primary.text]
+             */
+            return workOfFiction.filter { $0.localizedCaseInsensitiveContains(searchQuery) }
         }
-}
-
-struct SearchView_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchView()
     }
 }

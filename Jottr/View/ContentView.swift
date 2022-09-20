@@ -8,13 +8,13 @@
 import SwiftUI
 
 enum LoadingState {
-    case library, collection, storyTeller
+    case library, storyList, storyEditor
 }
 
 struct ContentView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGenerationStore
+    @EnvironmentObject var textGeneration: TextGeneration
 //    @Binding var hadLaunched: Bool
     
     @State private var currentView: LoadingState = .library
@@ -29,11 +29,11 @@ struct ContentView: View {
     var body: some View {
         switch currentView {
         case .library:
-            LibraryView(currentView: $currentView, image: $image, inputImage: $inputImage)
-        case .collection:
-            StoryCollectionsView(currentView: $currentView)
-        case .storyTeller:
-            StoryTellerView()
+            LibraryView(currentView: $currentView.animation(.easeInOut), image: $image, inputImage: $inputImage)
+        case .storyList:
+            StoryListView(currentView: $currentView)
+        case .storyEditor:
+            StoryEditorView(currentView: $currentView.animation(.easeInOut))
         }
     }
 }

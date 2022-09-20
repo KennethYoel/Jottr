@@ -7,13 +7,11 @@
 
 import SwiftUI
 
-struct StoryCollectionsView: View {
+struct StoryListView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGenerationStore
-    
+    @EnvironmentObject var textGeneration: TextGeneration
     @State private var isShareViewPresented: Bool = false
-    
     @Binding var currentView: LoadingState
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
@@ -40,14 +38,14 @@ struct StoryCollectionsView: View {
                      make our code work.
                      */
                     NavigationLink {
-                        StoryTellerView()
+                        StoryEditorView(currentView: $currentView.animation(.easeInOut))
 //                        Text(book.title ?? "Unknown Title")
                     } label: {
                         VStack(alignment: .leading) {
                             Text("Title of the Story") // story.title
                                 .font(.system(.headline, design: .serif))
                             
-                            Text(story.text ?? "Unknown Story")
+                            Text(story.text) //?? "Unknown Story"
                                 .foregroundColor(.secondary)
                                 .font(.system(.subheadline, design: .serif))
                                 // limit the amount of text shown in each item in the list
@@ -60,23 +58,25 @@ struct StoryCollectionsView: View {
                             }
                         }
                     }
-                }
-                // swipe to delete
+                } // swipe to delete
                 .onDelete(perform: deleteStory)
             }  // the sheet below is shown when isShareViewPresented is true
             .sheet(isPresented: $isShareViewPresented, onDismiss: {
-                print("Dismiss")
+                debugPrint("Dismiss")
             }, content: {
                 ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
             })
             //.fullScreenCover
         } // Complete Works -> Opera Omnia
+        .transition(.opacity)
         .navigationTitle("Collection")
-//            .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 HStack {
                     Image(systemName: "chevron.backward")
+                        .onTapGesture {
+                            self.currentView = .library
+                    }
                     Button("Library") {
                         self.currentView = .library
                     }

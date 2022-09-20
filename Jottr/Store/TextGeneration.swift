@@ -7,8 +7,9 @@
 
 import Foundation
 
-class TextGenerationStore: ObservableObject {
+class TextGeneration: ObservableObject {
     @Published var sessionPrompt = [SessionPrompt]()
+    @Published var title: String = ""
     @Published var sessionStory: String = ""
     
     var primary: SessionPrompt {

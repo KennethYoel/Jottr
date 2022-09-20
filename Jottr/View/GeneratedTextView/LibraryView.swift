@@ -37,11 +37,11 @@ struct LibraryView: View {
     
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var textGeneration: TextGenerationStore
+    @EnvironmentObject var textGeneration: TextGeneration
     
 //    @State private var showingLoginScreen = false
     @State private var isHidden: Bool = false
-    @State private var isShowingStoryCollectionsView = false
+    @State private var isShowingStoryListView = false
     @State private var genre = ""
     @State private var review = ""
     
@@ -56,7 +56,7 @@ struct LibraryView: View {
             Section {
                 // a link to a list of stories
                 Button {
-                    self.currentView = .collection
+                    self.currentView = .storyList
 //                    StoryCollectionsView()
                 } label: {
                     Label("Your Narratives", systemImage: "archivebox")
@@ -66,19 +66,22 @@ struct LibraryView: View {
                 
                 // a link to a list of premises written by the user
                 NavigationLink {
-                    StoryCollectionsView(currentView: $currentView)
+                    StoryListView(currentView: $currentView)
                 } label: {
-                    Label("Your Premises", systemImage: "highlighter")
+                    Label("as of ", systemImage: "deskclock")
                         .font(.system(.body, design: .serif))
                 }
                 .buttonStyle(.plain)
                 
-                // a link to a list stories the user deleted
-                HStack {
-                    Image(systemName: "trash")
-                    Text("Trash")
+                // a link to a list of stories the user recently deleted
+                Button {
+                    self.currentView = .storyList
+//                    StoryListView()
+                } label: {
+                    Label("Trash", systemImage: "trash")
                         .font(.system(.body, design: .serif))
                 }
+                .buttonStyle(.plain)
             }
             
             Section {
@@ -123,6 +126,7 @@ struct LibraryView: View {
 //                }
 //            }
         } // MARK: Form Modyfiers
-        .navigationTitle("🖋Jottr")
+        .transition(.opacity)
+        .navigationTitle("🖋Jottr") //highlighter
     }
 }

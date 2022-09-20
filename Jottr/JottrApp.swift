@@ -11,8 +11,10 @@ import SwiftUI
 struct JottrApp: App {
     // MARK: Properties
     
-    @StateObject var textGeneration = TextGenerationStore()
-    @State private var hadLaunched = UserDefaults.standard.bool(forKey: "hadLaunched")
+    // create text generator object
+    @StateObject var textGeneration = TextGeneration()
+    // @AppStorage stores user defaults similarly as using userDefaults.standard
+    @AppStorage("hadLauncehd") private var hadLaunched = false //UserDefaults.standard.bool(forKey: "hadLaunched")
     
     var body: some Scene {
         WindowGroup {
