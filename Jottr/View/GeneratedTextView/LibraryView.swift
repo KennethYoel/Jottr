@@ -49,6 +49,14 @@ struct LibraryView: View {
     @Binding var image: Image
     @Binding var inputImage: UIImage?
     
+    // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
+    static let taskDateFormat: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            return formatter
+        }()
+    let currentDate = Date()
+    
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
@@ -68,7 +76,7 @@ struct LibraryView: View {
                 NavigationLink {
                     StoryListView(currentView: $currentView)
                 } label: {
-                    Label("as of ", systemImage: "deskclock")
+                    Label("as of \(currentDate - 604800, formatter: Self.taskDateFormat)", systemImage: "deskclock")
                         .font(.system(.body, design: .serif))
                 }
                 .buttonStyle(.plain)

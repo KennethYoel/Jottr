@@ -1,13 +1,13 @@
 //
-//  ThemePicker.swift
+//  PremisePickerView.swift
 //  Jottr
 //
-//  Created by Kenneth Gutierrez on 9/19/22.
+//  Created by Kenneth Gutierrez on 9/20/22.
 //
 
 import SwiftUI
 
-enum CommonTheme { //: String, CaseIterable, Identifiable 
+enum PremiseSample { //: String, CaseIterable, Identifiable
     // Six common themes in literature are:
     case  goodVsEvil, love, redemption, courageAndPerseverance, comingOfAge, revenge
     
@@ -29,7 +29,7 @@ enum CommonTheme { //: String, CaseIterable, Identifiable
     }
 }
 
-struct ThemePicker: View {
+struct PremisePicker: View {
     // MARK: Properties
     
     @Binding var themeChoices: CommonTheme?
@@ -39,7 +39,7 @@ struct ThemePicker: View {
         Button {
             showingThemeOptions = true
         } label: {
-            Label(themeChoices?.stringComparisons ?? "Choose a Theme", systemImage: "theatermasks") 
+            Label(themeChoices?.stringComparisons ?? "Choose a Theme", systemImage: "theatermasks")
         }
         .actionSheet(isPresented: $showingThemeOptions) {
             ActionSheet(title: Text("Choose a common theme for the prompt"),
@@ -67,20 +67,11 @@ struct ThemePicker: View {
             )
         }
         .buttonStyle(.plain)
-        
-//        Picker("Themes", selection: $themeChoices) {
-//            ForEach(CommonTheme.allCases) {
-//                Text($0.rawValue).tag($0)
-//            }
-//        }
-//        if let finalChoice = themeChoices?.rawValue {
-//            Text("Selected theme: \(finalChoice)")
-//        }
     }
 }
 
-struct ThemePickerView_Previews: PreviewProvider {
+struct PremisePicker_Previews: PreviewProvider {
     static var previews: some View {
-        ThemePicker(themeChoices: .constant(.goodVsEvil))
+        PremisePicker(themeChoices: .constant(.goodVsEvil))
     }
 }

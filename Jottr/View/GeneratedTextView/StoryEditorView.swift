@@ -14,6 +14,7 @@ struct StoryEditorView: View {
     @EnvironmentObject var textGeneration: TextGeneration
     @Environment(\.dismiss) var dismiss
     
+    @State private var progress = 0.2
     @State private var setTheme: CommonTheme? = nil
     @State var showingAccountScreen = false
     
@@ -23,17 +24,21 @@ struct StoryEditorView: View {
     
     var body: some View {
         ScrollView {
+//            ProgressView(value: progress, total: 1.0)
+//                .progressViewStyle(GaugeProgressStyle())
+//                .frame(width: 200, height: 200)
+//                .contentShape(Rectangle())
+//                .onTapGesture {
+//                    if progress < 1.0 {
+//                        withAnimation {
+//                            progress += 0.2
+//                        }
+//                    }
+//                }
             TextEditor(text: $textGeneration.sessionStory)
                 .focused($isInputActive)
                 .padding([.leading, .trailing])
-            
-            Button("Con't") {
-                textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
-            }
-            .buttonStyle(.bordered)
-            .cornerRadius(40)
-            .foregroundColor(.black)
-            .padding(10)
+                .frame(maxHeight: .infinity)
             
             Button("Dismiss") {
                 dismiss()
@@ -43,18 +48,37 @@ struct StoryEditorView: View {
             .foregroundColor(.black)
             .padding(10)
         }
+        .sheet(isPresented: $showingAccountScreen) {
+            AccountView()
+        }
         .transition(.opacity)
 //        .navigationTitle("Story Editor")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                Button {
-//                    showingAccountScreen.toggle()
-//                } label: {
-//                    Label("Account", systemImage: "wallet.pass")
-//                }
-//                .buttonStyle(.plain)
-//            }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                if isInputActive {
+                    Button("Write It") {
+                        textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
+                    }
+                    .buttonStyle(CustomButton())
+                    .padding()
+                } else {
+                    Button {
+                        showingAccountScreen.toggle()
+                    } label: {
+                        Label("Account", systemImage: "square.and.pencil")
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Button {
+                        showingAccountScreen.toggle()
+                    } label: {
+                        Label("Account", systemImage: "ellipsis.circle")
+                    }
+                    .buttonStyle(.plain)
+                    .padding()
+                }
+            }
             
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
@@ -72,9 +96,6 @@ struct StoryEditorView: View {
                     Image(systemName: "keyboard.chevron.compact.down")
                 }
             }
-        }
-        .sheet(isPresented: $showingAccountScreen) {
-            AccountView()
         }
     }
     

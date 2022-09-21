@@ -9,26 +9,31 @@ import Combine
 import CoreData
 import SwiftUI
 
-//enum CommonTheme: String, CaseIterable, Identifiable {
-//    case  goodVsEvil, love, redemption, courageAndPerseverance, comingOfAge, revenge
-//    
-//    var id: String { self.rawValue }
-//}
-
 struct PromptEditorView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGeneration
     @Environment(\.managedObjectContext) var moc
     @Environment(\.dismiss) var dismissAddStory
+    
     @FocusState private var isInputActive: Bool
     
 //    @StateObject var loginVM = LoginViewModel()
 //    @Binding var hadLaunched: Bool
+    @State private var explainerContent: Explainer = .themeExplainer
     @State private var isShowingThemePopover: Bool = false
     @State private var isShowingPremisePopover: Bool = false
+    @State private var isShowingBannedPopover: Bool = false
     @State private var alertUser: Bool = false
     @State private var isCommonTheme: Bool = false
+    @State private var showingThemeOptions = false
+    
+    @State private var theme: String = ""
+    @State private var setTheme: CommonTheme? = nil
+//    @State private var selection = "None"
+    @State private var bannedWord: String = ""
+    @State private var showingStoryTellerScreen = false
+    @State private var message: String = ""
     
     @State private var title = ""
     @State private var author = ""
@@ -36,31 +41,8 @@ struct PromptEditorView: View {
     @State private var genre = ""
     @State private var review = ""
     
-    var message: String = ""
-    
-    let themePlaceholder: String = """
-    Start with a topic, which is the central idea.
-    
-    E.g. "What comes around, goes around."
-    """
-    let premisePlaceholder: String = """
-    Start with the premise, which is your entire story condensed to a single sentence
-        
-    E.g. "Three people tell conflicting versions of a meeting that changed the outcome of World War II."
-    
-    Influence your AI writing style with directions.
-    
-    E.g. "Use a very descriptive writing style in 17th century language."
-    """
-    let bannedPlaceholder: String = " Add a word or words to ban."
-    
-    @State private var theme: String = ""
-    @State private var setTheme: CommonTheme? = nil
-    @State private var showingThemeOptions = false
-    @State private var selection = "None"
-    
-    @State private var bannedWord: String = ""
-    @State var showingStoryTellerScreen = false
+    let themePlaceholder: String = "Type the theme here or choose a common one ⬇️."
+    let premisePlaceholder: String = "Type the premise here"
     let textLimit = 350
     let detector = PassthroughSubject<Void, Never>()
     let publisher: AnyPublisher<Void, Never>
@@ -84,80 +66,81 @@ struct PromptEditorView: View {
         NavigationView {
             Form {
                 Section {
-                    CustomTextEditor(placeholder: themePlaceholder, text: $theme)
+                    TextField(themePlaceholder, text: $theme) // use onChange to update the placeholder
                         .focused($isInputActive)
-    //                    .cornerRadius(11)
                         .foregroundColor(.primary)
-                        .font(.custom("HelveticaNeue", size: 13))
-//                        .padding(.horizontal)
+                        .font(.custom("Futura", size: 13)) // use either Futura, Caslon, or Johnston-the London underground typeface
                         .onReceive(Just(theme)) { _ in limitText(textLimit) }
                     
-                    ThemePicker(themeChoices: $setTheme)
-                        .padding()
+                    HStack {
+                        Spacer()
+                        ThemePicker(themeChoices: $setTheme)
+                            .padding()
+                    }
                 } header: {
                     HStack {
                         Text("_Theme_")
-//                            .padding(.leading)
+                            .font(.custom("Futura", size: 13))
                         
                         // popover with instructional information
                         Button {
-                            self.isShowingThemePopover = true
+                            self.explainerContent = .themeExplainer
+                            isShowingThemePopover.toggle()
+                            if isShowingThemePopover {
+                                isShowingPremisePopover = false
+                            }
                         } label: {
                             Image(systemName: "questionmark.circle")
                         }
-                        .popover(isPresented: $isShowingThemePopover) { PopoverThemeView() }
+                        .popover(isPresented: $isShowingThemePopover) {
+                            PopoverTextView(mainPopover: $explainerContent)
+                        }
                     }
                 }
+                .listRowSeparator(.hidden)
                 
                 Section {
-                    CustomTextEditor(placeholder: premisePlaceholder, text: $textGeneration.primary.text)
+                    CustomTextEditor(placeholder: premisePlaceholder, text: $textGeneration.primary.text, title: $title)
                         .focused($isInputActive)
-    //                    .cornerRadius(11)
                         .foregroundColor(.primary)
-                        .font(.custom("HelveticaNeue", size: 13))
-//                        .padding(.horizontal)
+                        .font(.custom("Futura", size: 13)) //HelveticaNeue
                         .onReceive(Just(textGeneration.primary.text)) { _ in limitText(textLimit) }
                         .onChange(of: textGeneration.primary.text) { _ in detector.send() }
                         .onReceive(publisher) { save() }
                 } header: {
                     HStack {
                         Text("_Premise_")
-//                            .padding(.leading)
+                            .font(.custom("Futura", size: 13))
 
                         // popover with instructional information
                         Button {
-                            self.isShowingPremisePopover = true
+                            self.explainerContent = .premiseExplainer
+                            isShowingPremisePopover.toggle()
+                            if isShowingPremisePopover {
+                                isShowingThemePopover = false
+                            }
                         } label: {
                             Image(systemName: "questionmark.circle")
                         }
-                        .popover(isPresented: $isShowingPremisePopover) { PopoverPremiseView() }
+                        .popover(isPresented: $isShowingPremisePopover) {
+                            PopoverTextView(mainPopover: $explainerContent)
+                        } 
                     }
                 }
                 
                 Section {
-                    TextField(bannedPlaceholder, text: $bannedWord)
-                        .border(Color.black, width: 2)
-    //                    .cornerRadius(11)
-                        .foregroundColor(.primary)
-                        .font(.custom("HelveticaNeue", size: 13))
-                        .padding(.horizontal)
-                        .padding(.bottom)
-                } header: {
-                    Text("_Banned Words_")
-                        .padding(.leading)
-                }
-                
-                Section {
-                    Button("Do Write") {
-                       // TODO: need to make sure this is added once, maybe use boolean
-                       let text = promptDesign(theme, textGeneration.primary.text)
-                       textGeneration.getTextResponse(moderated: false, sessionStory: text)
-                       showingStoryTellerScreen.toggle()
-   //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
-                   }
-                   .buttonStyle(.bordered)
-                   .tint(.indigo)
-//                 .buttonStyle(.borderedProminent)
+                    HStack {
+                        Spacer()
+                        
+                        Button("Write It") {
+                           // TODO: need to make sure this is added once, maybe use boolean
+                           let text = promptDesign(theme, textGeneration.primary.text)
+                           textGeneration.getTextResponse(moderated: false, sessionStory: text)
+                           showingStoryTellerScreen.toggle()
+       //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
+                        }
+                        .buttonStyle(CustomButton())
+                    }
                 }
             }
             // next screen of adding a book review is shown when showingAddScreen is true

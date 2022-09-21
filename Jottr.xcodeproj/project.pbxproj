@@ -32,9 +32,13 @@
 		57AE975328D89C8F00A75B3A /* ThemePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AE975228D89C8F00A75B3A /* ThemePicker.swift */; };
 		57AEB8C828D0612D00034D7B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AEB8C728D0612D00034D7B /* MainView.swift */; };
 		57B1F55128D1E9C5000B72CE /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B1F55028D1E9C5000B72CE /* ImageSaver.swift */; };
+		57C0C71828DB41E6005B7919 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C0C71728DB41E6005B7919 /* CustomButton.swift */; };
+		57C0C71A28DB43B7005B7919 /* GaugeProgressStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C0C71928DB43B7005B7919 /* GaugeProgressStyle.swift */; };
+		57C0C71C28DB70AC005B7919 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C0C71B28DB70AC005B7919 /* View+Extensions.swift */; };
 		57D3BF6D28CBABDA009A710A /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D3BF6C28CBABDA009A710A /* LibraryView.swift */; };
 		57DBD5B028D9C4B700869002 /* PopoverText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DBD5AF28D9C4B700869002 /* PopoverText.swift */; };
 		57DBD5B228D9C65400869002 /* CustomTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DBD5B128D9C65400869002 /* CustomTextEditor.swift */; };
+		57DBD5B428DA3C3800869002 /* PremisePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DBD5B328DA3C3800869002 /* PremisePicker.swift */; };
 		57EE5B1528BCD35400D961B9 /* TextGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EE5B1428BCD35400D961B9 /* TextGeneration.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,9 +68,13 @@
 		57AE975228D89C8F00A75B3A /* ThemePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePicker.swift; sourceTree = "<group>"; };
 		57AEB8C728D0612D00034D7B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		57B1F55028D1E9C5000B72CE /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
+		57C0C71728DB41E6005B7919 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		57C0C71928DB43B7005B7919 /* GaugeProgressStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeProgressStyle.swift; sourceTree = "<group>"; };
+		57C0C71B28DB70AC005B7919 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		57D3BF6C28CBABDA009A710A /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		57DBD5AF28D9C4B700869002 /* PopoverText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverText.swift; sourceTree = "<group>"; };
 		57DBD5B128D9C65400869002 /* CustomTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextEditor.swift; sourceTree = "<group>"; };
+		57DBD5B328DA3C3800869002 /* PremisePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremisePicker.swift; sourceTree = "<group>"; };
 		57EE5B1428BCD35400D961B9 /* TextGeneration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextGeneration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -139,7 +147,6 @@
 				5779136C28A50B5900EF0E9B /* AccountView.swift */,
 				5779136E28A51E4E00EF0E9B /* LoginView.swift */,
 				5745669128D3A5840002DB98 /* SearchView.swift */,
-				5779136A28A4D40D00EF0E9B /* PromptEditorView.swift */,
 				575F623728D0A85700EFE7C0 /* UIViewController.swift */,
 			);
 			path = View;
@@ -223,6 +230,8 @@
 				57D3BF6C28CBABDA009A710A /* LibraryView.swift */,
 				5729771028CF358800E465EF /* StoryListView.swift */,
 				5749D76628C78ED700AC3C2B /* StoryEditorView.swift */,
+				5779136A28A4D40D00EF0E9B /* PromptEditorView.swift */,
+				57C0C71B28DB70AC005B7919 /* View+Extensions.swift */,
 			);
 			path = GeneratedTextView;
 			sourceTree = "<group>";
@@ -233,6 +242,9 @@
 				57DBD5B128D9C65400869002 /* CustomTextEditor.swift */,
 				57DBD5AF28D9C4B700869002 /* PopoverText.swift */,
 				57AE975228D89C8F00A75B3A /* ThemePicker.swift */,
+				57DBD5B328DA3C3800869002 /* PremisePicker.swift */,
+				57C0C71728DB41E6005B7919 /* CustomButton.swift */,
+				57C0C71928DB43B7005B7919 /* GaugeProgressStyle.swift */,
 			);
 			path = DetailView;
 			sourceTree = "<group>";
@@ -315,9 +327,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57C0C71828DB41E6005B7919 /* CustomButton.swift in Sources */,
 				5745669228D3A5840002DB98 /* SearchView.swift in Sources */,
 				57D3BF6D28CBABDA009A710A /* LibraryView.swift in Sources */,
 				5779136B28A4D40D00EF0E9B /* PromptEditorView.swift in Sources */,
+				57DBD5B428DA3C3800869002 /* PremisePicker.swift in Sources */,
 				572B12E728A3C97600227AB4 /* OpenAIResponse.swift in Sources */,
 				57EE5B1528BCD35400D961B9 /* TextGeneration.swift in Sources */,
 				575F623828D0A85700EFE7C0 /* UIViewController.swift in Sources */,
@@ -331,6 +345,7 @@
 				57AE975328D89C8F00A75B3A /* ThemePicker.swift in Sources */,
 				5779136D28A50B5900EF0E9B /* AccountView.swift in Sources */,
 				572B12E928A3CA4200227AB4 /* ModerationResponse.swift in Sources */,
+				57C0C71A28DB43B7005B7919 /* GaugeProgressStyle.swift in Sources */,
 				57AEB8C828D0612D00034D7B /* MainView.swift in Sources */,
 				5752803C28D0CF7E00CD8A9F /* AlertView.swift in Sources */,
 				5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */,
@@ -339,6 +354,7 @@
 				5729771128CF358800E465EF /* StoryListView.swift in Sources */,
 				5749D76728C78ED700AC3C2B /* StoryEditorView.swift in Sources */,
 				574B4D5928A6552700FC47D8 /* OpenAIRequest.swift in Sources */,
+				57C0C71C28DB70AC005B7919 /* View+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
