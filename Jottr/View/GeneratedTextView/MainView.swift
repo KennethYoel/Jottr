@@ -7,59 +7,58 @@
 
 import SwiftUI
 
-extension Color {
-    static let offWhite = Color(red: 255 / 255, green: 255 / 255, blue: 235 / 255)
-}
-
 struct MainView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGeneration
     @Binding var hadLaunched: Bool
     
-    @State private var showingAddStoryScreen = false
-    @State private var showingLoginScreen = false
-    @State private var showingSearchScreen = false
+    var currentView: LoadingState = .library
+    @State private var isShowingAccountScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingSearchScreen = false
     
-    @State var image: Image = Image("noImagePlaceholder")
-    @State var inputImage: UIImage?
+    @State private var image: Image = Image("noImagePlaceholder")
+    @State private var inputImage: UIImage?
     @State private var showingImagePicker = false
     
     var body: some View {
         // initial view
         NavigationView {
-            ContentView(image: $image, inputImage: $inputImage) //, hadLaunched: $hadLaunched
+            ContentView(currentView: currentView) //, hadLaunched: $hadLaunched
                 .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: StoryEditorView(currentView: .constant(.storyEditor))) {
-                            Label("New Story", systemImage: "square.and.pencil")
-                        }
-                        
-                        Menu {
-                            Button { // this belongs with create a story view
-                                showingAddStoryScreen.toggle()
-                            } label: {
-                                Label("Prompt Editor", systemImage: "doc.badge.gearshape")
-                            }
-                            
-                            Button {
-                                showingLoginScreen.toggle()
-                            } label: {
-                                Label("Login", systemImage: "lanyardcard")
-                            }
-                            
-                            Button {
-                                showingImagePicker.toggle()
-                            } label: {
-                                Text("Images")
-                                Image(systemName: "arrow.up.and.down.circle")
-                            }
-                        } label: {
-                             Image(systemName: "gearshape.2")
-                        }
-                    }
+                    ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+//                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+//                        NavigationLink(destination: StoryEditorView()) {
+//                            Label("New Story", systemImage: "square.and.pencil")
+//                        }
+//
+//                        Menu {
+//                            Button { // this belongs with create a story view
+//                                showingAddStoryScreen.toggle()
+//                            } label: {
+//                                Label("Prompt Editor", systemImage: "doc.badge.gearshape")
+//                            }
+//
+//                            Button {
+//                                showingLoginScreen.toggle()
+//                            } label: {
+//                                Label("Login", systemImage: "lanyardcard")
+//                            }
+//
+//                            Button {
+//        //                        showingImagePicker.toggle()
+//                            } label: {
+//                                Text("Images")
+//                                Image(systemName: "arrow.up.and.down.circle")
+//                            }
+//                        } label: {
+//                             Image(systemName: "gearshape.2")
+//                        }
+//                    }
                 }
-                .onChange(of: inputImage) { _ in loadImage() }
+        //        .onChange(of: inputImage) { _ in loadImage() }
                 .safeAreaInset(edge: .bottom, alignment: .trailing) {
                     ZStack {
                         Circle()
@@ -67,7 +66,7 @@ struct MainView: View {
                             .frame(width: 45, height: 45)
                             .padding([.trailing], 25)
                         Button {
-                            showingSearchScreen.toggle()
+                            isShowingSearchScreen.toggle()
                         } label: {
                             Image(systemName: "magnifyingglass")
                                 .renderingMode(.original)
@@ -78,11 +77,11 @@ struct MainView: View {
                         .accessibilityLabel("Show Search")
                     }
                 }
-                .sheet(isPresented: $showingAddStoryScreen) { PromptEditorView() }
-                .sheet(isPresented: $showingLoginScreen) { LoginView() }
-                .sheet(isPresented: $showingSearchScreen) { SearchView() }
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $inputImage) }
-        }
+                .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+                .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
+                .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+        //        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $inputImage) }
+                }
     }
     
     /*
@@ -91,10 +90,10 @@ struct MainView: View {
      method that checks whether inputImage has a value, and if it does uses it to assign a new
      Image view to the image property.
      */
-    func loadImage() {
-        guard let inputImage = inputImage else { return }
-        image = Image(uiImage: inputImage)
-    }
+//    func loadImage() {
+//        guard let inputImage = inputImage else { return }
+//        image = Image(uiImage: inputImage)
+//    }
 }
 
 //struct MainView_Previews: PreviewProvider {

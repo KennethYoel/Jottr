@@ -40,14 +40,15 @@ struct LibraryView: View {
     @EnvironmentObject var textGeneration: TextGeneration
     
 //    @State private var showingLoginScreen = false
+//    @State private var currentView: LoadingState = .library
     @State private var isHidden: Bool = false
     @State private var isShowingStoryListView = false
     @State private var genre = ""
     @State private var review = ""
     
-    @Binding var currentView: LoadingState
-    @Binding var image: Image
-    @Binding var inputImage: UIImage?
+//    @Binding var currentView: LoadingState
+//    @Binding var image: Image
+//    @Binding var inputImage: UIImage?
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -63,9 +64,8 @@ struct LibraryView: View {
         Form {
             Section {
                 // a link to a list of stories
-                Button {
-                    self.currentView = .storyList
-//                    StoryCollectionsView()
+                NavigationLink {
+                    ContentView(currentView: LoadingState.storyList)
                 } label: {
                     Label("Your Narratives", systemImage: "archivebox")
                         .font(.system(.body, design: .serif))
@@ -74,7 +74,7 @@ struct LibraryView: View {
                 
                 // a link to a list of premises written by the user
                 NavigationLink {
-                    StoryListView(currentView: $currentView)
+                    ContentView(currentView: LoadingState.storyList)
                 } label: {
                     Label("as of \(currentDate - 604800, formatter: Self.taskDateFormat)", systemImage: "deskclock")
                         .font(.system(.body, design: .serif))
@@ -83,7 +83,7 @@ struct LibraryView: View {
                 
                 // a link to a list of stories the user recently deleted
                 Button {
-                    self.currentView = .storyList
+//                    self.currentView = .storyList
 //                    StoryListView()
                 } label: {
                     Label("Trash", systemImage: "trash")
@@ -94,17 +94,18 @@ struct LibraryView: View {
             
             Section {
                 if !isHidden {
-                    image
-                        .resizable()
-                        .scaledToFit()
+                    Text("Intro")
+//                    image
+//                        .resizable()
+//                        .scaledToFit()
                 }
                 
-                Button("Save Image") {
-                    guard let inputImage = inputImage else { return }
-                    
-                    let imageSaver = ImageSaver()
-                    imageSaver.writeToPhotoAlbum(image: inputImage)
-                }
+//                Button("Save Image") {
+//                    guard let inputImage = inputImage else { return }
+//
+//                    let imageSaver = ImageSaver()
+//                    imageSaver.writeToPhotoAlbum(image: inputImage)
+//                }
             } header: {
                 HStack {
                     Text("INTRODUCTION")

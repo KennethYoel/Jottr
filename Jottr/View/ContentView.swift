@@ -15,26 +15,36 @@ struct ContentView: View {
     // MARK: Properties
     
     @EnvironmentObject var textGeneration: TextGeneration
+    var currentView = LoadingState.library
 //    @Binding var hadLaunched: Bool
     
-    @State private var currentView: LoadingState = .library
-    @State private var showingAccountScreen = false
-    @State private var showingLoginScreen = false
+    @State private var isShowingAccountScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingSearchScreen = false
     
-    @Binding var image: Image
-    @Binding var inputImage: UIImage?
+    
+//    @Binding var image: Image
+//    @Binding var inputImage: UIImage?
     
     // MARK: View
     
     var body: some View {
-        switch currentView {
-        case .library:
-            LibraryView(currentView: $currentView.animation(.easeInOut), image: $image, inputImage: $inputImage)
-        case .storyList:
-            StoryListView(currentView: $currentView)
-        case .storyEditor:
-            StoryEditorView(currentView: $currentView.animation(.easeInOut))
-        }
+            switch currentView {
+            case .library:
+                LibraryView() //.animation(.easeInOut
+                    .toolbar {
+                        ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+                    }
+            case .storyList:
+                StoryListView()
+                    .toolbar {
+                        ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+                    }
+            case .storyEditor:
+    //            StoryEditorView(currentView: $currentView.animation(.easeInOut))
+                LibraryView()
+            }
     }
 }
 

@@ -12,7 +12,7 @@ struct StoryListView: View {
     
     @EnvironmentObject var textGeneration: TextGeneration
     @State private var isShareViewPresented: Bool = false
-    @Binding var currentView: LoadingState
+//    @Binding var currentView: LoadingState
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -38,7 +38,7 @@ struct StoryListView: View {
                      make our code work.
                      */
                     NavigationLink {
-                        StoryEditorView(currentView: $currentView.animation(.easeInOut))
+                        StoryEditorView() //currentView: $currentView.animation(.easeInOut)
 //                        Text(book.title ?? "Unknown Title")
                     } label: {
                         VStack(alignment: .leading) {
@@ -71,18 +71,18 @@ struct StoryListView: View {
         .transition(.opacity)
         .navigationTitle("Collection")
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                HStack {
-                    Image(systemName: "chevron.backward")
-                        .onTapGesture {
-                            self.currentView = .library
-                    }
-                    Button("Library") {
-                        self.currentView = .library
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+//            ToolbarItem(placement: .navigationBarLeading) {
+//                HStack {
+//                    Image(systemName: "chevron.backward")
+//                        .onTapGesture {
+//                            self.currentView = .library
+//                    }
+//                    Button("Library") {
+//                        self.currentView = .library
+//                    }
+//                    .buttonStyle(.plain)
+//                }
+//            }
         }
     }
     

@@ -18,12 +18,12 @@ struct StoryEditorView: View {
     @State private var setTheme: CommonTheme? = nil
     @State var showingAccountScreen = false
     
-    @Binding var currentView: LoadingState
+//    @Binding var currentView: LoadingState
     
     @FocusState private var isInputActive: Bool
     
     var body: some View {
-        ScrollView {
+        Form {
 //            ProgressView(value: progress, total: 1.0)
 //                .progressViewStyle(GaugeProgressStyle())
 //                .frame(width: 200, height: 200)
@@ -34,19 +34,20 @@ struct StoryEditorView: View {
 //                            progress += 0.2
 //                        }
 //                    }
+//                    textGeneration.sessionPrompt[0].text
 //                }
             TextEditor(text: $textGeneration.sessionStory)
                 .focused($isInputActive)
                 .padding([.leading, .trailing])
-                .frame(maxHeight: .infinity)
+//                .frame(maxHeight: .infinity)
             
-            Button("Dismiss") {
-                dismiss()
-            }
-            .buttonStyle(.bordered)
-            .cornerRadius(40)
-            .foregroundColor(.black)
-            .padding(10)
+//            Button("Dismiss") {
+//                dismiss()
+//            }
+//            .buttonStyle(.bordered)
+//            .cornerRadius(40)
+//            .foregroundColor(.black)
+//            .padding(10)
         }
         .sheet(isPresented: $showingAccountScreen) {
             AccountView()
@@ -57,6 +58,9 @@ struct StoryEditorView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 if isInputActive {
+                    ThemePicker(themeChoices: $setTheme)
+                        .padding()
+                    
                     Button("Write It") {
                         textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
                     }
@@ -80,12 +84,12 @@ struct StoryEditorView: View {
                 }
             }
             
-            ToolbarItemGroup(placement: .bottomBar) {
-                Spacer()
-
-                ThemePicker(themeChoices: $setTheme)
-                    .padding()
-            }
+//            ToolbarItemGroup(placement: .bottomBar) {
+//                Spacer()
+//
+//                ThemePicker(themeChoices: $setTheme)
+//                    .padding()
+//            }
             
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()

@@ -145,7 +145,7 @@ struct PromptEditorView: View {
             }
             // next screen of adding a book review is shown when showingAddScreen is true
             .sheet(isPresented: $showingStoryTellerScreen) {
-                StoryEditorView(currentView: .constant(.storyEditor))
+                StoryEditorView()
             }
             .alert(title, isPresented: $alertUser, presenting: message) {_ in
                 Button("OK") {}
