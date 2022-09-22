@@ -7,48 +7,26 @@
 
 import SwiftUI
 
-struct HideSectionView: View {
-    // MARK: Properties
-    
-    @Binding var isHidden: Bool
-    
-    var body: some View {
-        Menu("...") {
-            if !isHidden {
-                Button {
-                    isHidden.toggle()
-                } label: {
-                    Label("Collapse", systemImage: "rectangle.compress.vertical")
-                }
-            } else {
-                Button {
-                    isHidden.toggle()
-                } label: {
-                    Label("Expand", systemImage: "rectangle.expand.vertical")
-                }
-            }
-        }
-        .font(.system(.caption, design: .serif))
-    }
-}
-
 struct LibraryView: View {
     // MARK: Properties
     
+    @EnvironmentObject var textGeneration: TextGeneration
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var textGeneration: TextGeneration
-    
-//    @State private var showingLoginScreen = false
-//    @State private var currentView: LoadingState = .library
-    @State private var isHidden: Bool = false
+    @State private var isShowingAccountScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingSearchScreen = false
     @State private var isShowingStoryListView = false
+    
+    @State private var isHidden: Bool = false
+   
     @State private var genre = ""
     @State private var review = ""
     
-//    @Binding var currentView: LoadingState
-//    @Binding var image: Image
-//    @Binding var inputImage: UIImage?
+//    @State private var image: Image = Image("noImagePlaceholder")
+//    @State private var inputImage: UIImage?
+//    @State private var showingImagePicker = false
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -58,7 +36,7 @@ struct LibraryView: View {
         }()
     let currentDate = Date()
     
-    let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
+    let genres = [" Fantasy and Science Fiction", "Horror", "Children’s Fiction", "Mystery", "Romance", "Thriller"]
     
     var body: some View {
         Form {
@@ -68,26 +46,26 @@ struct LibraryView: View {
                     ContentView(currentView: LoadingState.storyList)
                 } label: {
                     Label("Your Narratives", systemImage: "archivebox")
-                        .font(.system(.body, design: .serif))
+                        .font(.custom("Futura", size: 13))
                 }
                 .buttonStyle(.plain)
                 
                 // a link to a list of premises written by the user
                 NavigationLink {
-                    ContentView(currentView: LoadingState.storyList)
+                    ContentView(currentView: LoadingState.storyList) //.animation(.easeInOut
                 } label: {
-                    Label("as of \(currentDate - 604800, formatter: Self.taskDateFormat)", systemImage: "deskclock")
-                        .font(.system(.body, design: .serif))
-                }
+                    Label("Most Recent", systemImage: "deskclock")
+                        .font(.custom("Futura", size: 13))
+                }// "as of \(currentDate - 604800, formatter: Self.taskDateFormat)"
                 .buttonStyle(.plain)
                 
                 // a link to a list of stories the user recently deleted
-                Button {
+                NavigationLink {
 //                    self.currentView = .storyList
 //                    StoryListView()
                 } label: {
                     Label("Trash", systemImage: "trash")
-                        .font(.system(.body, design: .serif))
+                        .font(.custom("Futura", size: 13))
                 }
                 .buttonStyle(.plain)
             }
@@ -137,5 +115,42 @@ struct LibraryView: View {
         } // MARK: Form Modyfiers
         .transition(.opacity)
         .navigationTitle("🖋Jottr") //highlighter
-    }
+        .toolbar {
+            ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+        }
+//        .onChange(of: inputImage) { _ in loadImage() }
+        .safeAreaInset(edge: .bottom, alignment: .trailing) {
+            ZStack {
+                Circle()
+                    .fill(.white)
+                    .frame(width: 45, height: 45)
+                    .padding([.trailing], 25)
+                Button {
+                    isShowingSearchScreen.toggle()
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .renderingMode(.original)
+                        .font(.headline)
+                        .padding([.trailing], 25)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Show Search")
+            }
+        }
+        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+        .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
+        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+//        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $inputImage) }
+        }
+    
+    /*
+     A method we can call when that property changes. Remember, we can’t use a plain property
+     observer here because Swift will ignore changes to the binding, so instead we’ll write a
+     method that checks whether inputImage has a value, and if it does uses it to assign a new
+     Image view to the image property.
+     */
+//    func loadImage() {
+//        guard let inputImage = inputImage else { return }
+//        image = Image(uiImage: inputImage)
+//    }
 }

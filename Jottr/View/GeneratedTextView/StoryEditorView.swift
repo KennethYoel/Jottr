@@ -16,91 +16,94 @@ struct StoryEditorView: View {
     
     @State private var progress = 0.2
     @State private var setTheme: CommonTheme? = nil
-    @State var showingAccountScreen = false
-    
-//    @Binding var currentView: LoadingState
+   
+    @State private var isShowingAccountScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingSearchScreen = false
     
     @FocusState private var isInputActive: Bool
     
     var body: some View {
-        Form {
-//            ProgressView(value: progress, total: 1.0)
-//                .progressViewStyle(GaugeProgressStyle())
-//                .frame(width: 200, height: 200)
-//                .contentShape(Rectangle())
-//                .onTapGesture {
-//                    if progress < 1.0 {
-//                        withAnimation {
-//                            progress += 0.2
-//                        }
+//        ProgressView(value: progress, total: 1.0)
+//            .progressViewStyle(GaugeProgressStyle())
+//            .frame(width: 200, height: 200)
+//            .contentShape(Rectangle())
+//            .onTapGesture {
+//                if progress < 1.0 {
+//                    withAnimation {
+//                        progress += 0.2
 //                    }
-//                    textGeneration.sessionPrompt[0].text
 //                }
-            TextEditor(text: $textGeneration.sessionStory)
+//                textGeneration.sessionPrompt[0].text
+//            }
+        TextEditor(text: $textGeneration.sessionStory)
                 .focused($isInputActive)
-                .padding([.leading, .trailing])
-//                .frame(maxHeight: .infinity)
-            
-//            Button("Dismiss") {
-//                dismiss()
-//            }
-//            .buttonStyle(.bordered)
-//            .cornerRadius(40)
-//            .foregroundColor(.black)
-//            .padding(10)
-        }
-        .sheet(isPresented: $showingAccountScreen) {
-            AccountView()
-        }
-        .transition(.opacity)
-//        .navigationTitle("Story Editor")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if isInputActive {
-                    ThemePicker(themeChoices: $setTheme)
-                        .padding()
+                .padding([.leading, .top, .trailing,])
+                .transition(.opacity)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        if isInputActive {
+                            ThemePicker(themeChoices: $setTheme)
+                                .padding()
+                            
+                            Button("Write It") {
+                                textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
+                            }
+                            .buttonStyle(CustomButton())
+                            .padding()
+                        } else {
+                            NavigationLink(destination: StoryEditorView()) {
+                                Label("New Story", systemImage: "square.and.pencil")
+                            }
+                            
+                            Menu {
+                                Button { // this belongs with create a story view
+                                    isShowingPromptEditorScreen.toggle()
+                                } label: {
+                                    Label("Prompt Editor", systemImage: "doc.badge.gearshape")
+                                }
+                                
+                                Button {
+                                    isShowingLoginScreen.toggle()
+                                } label: {
+                                    Label("Login", systemImage: "lanyardcard")
+                                }
+                                
+                                Button {
+                //                        showingImagePicker.toggle()
+                                } label: {
+                                    Text("Images")
+                                    Image(systemName: "arrow.up.and.down.circle")
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                           }
+                        }
+                    }
                     
-                    Button("Write It") {
-                        textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        Spacer()
+
+                        ThemePicker(themeChoices: $setTheme)
+                            .padding()
                     }
-                    .buttonStyle(CustomButton())
-                    .padding()
-                } else {
-                    Button {
-                        showingAccountScreen.toggle()
-                    } label: {
-                        Label("Account", systemImage: "square.and.pencil")
-                    }
-                    .buttonStyle(.plain)
                     
-                    Button {
-                        showingAccountScreen.toggle()
-                    } label: {
-                        Label("Account", systemImage: "ellipsis.circle")
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        
+                        Button {
+                            hideKeyboardAndSave()
+                        } label: {
+                            Image(systemName: "keyboard.chevron.compact.down")
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .padding()
                 }
-            }
-            
-//            ToolbarItemGroup(placement: .bottomBar) {
-//                Spacer()
-//
-//                ThemePicker(themeChoices: $setTheme)
-//                    .padding()
-//            }
-            
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                
-                Button {
-                    hideKeyboardAndSave()
-                } label: {
-                    Image(systemName: "keyboard.chevron.compact.down")
-                }
-            }
-        }
+                .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+                .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
+                .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+                .sheet(isPresented: $isShowingAccountScreen) { AccountView() }
     }
     
     // MARK: Helper Methods

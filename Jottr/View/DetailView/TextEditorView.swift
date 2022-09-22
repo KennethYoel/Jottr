@@ -12,7 +12,7 @@ import SwiftUI
  Code sample for a TextEditor with Placeholder functionality from cs4alhaider at
  https://stackoverflow.com/questions/62741851/how-to-add-placeholder-text-to-texteditor-in-swiftui
  */
-struct CustomTextEditor: View {
+struct TextEditorView: View {
     
     let placeholder: String
     @Binding var text: String
@@ -21,7 +21,6 @@ struct CustomTextEditor: View {
     var body: some View {
         VStack {
             TextField("Title", text: $title)
-//                .focused($isInputActive)
                 .font(.custom("Futura", size: 13))
             ZStack(alignment: .leading) {
                 if text.isEmpty {

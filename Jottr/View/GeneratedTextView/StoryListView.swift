@@ -12,7 +12,11 @@ struct StoryListView: View {
     
     @EnvironmentObject var textGeneration: TextGeneration
     @State private var isShareViewPresented: Bool = false
-//    @Binding var currentView: LoadingState
+    
+    @State private var isShowingAccountScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingSearchScreen = false
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -71,19 +75,11 @@ struct StoryListView: View {
         .transition(.opacity)
         .navigationTitle("Collection")
         .toolbar {
-//            ToolbarItem(placement: .navigationBarLeading) {
-//                HStack {
-//                    Image(systemName: "chevron.backward")
-//                        .onTapGesture {
-//                            self.currentView = .library
-//                    }
-//                    Button("Library") {
-//                        self.currentView = .library
-//                    }
-//                    .buttonStyle(.plain)
-//                }
-//            }
+            ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
         }
+        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+        .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
+        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
     }
     
     func deleteStory(at offsets: IndexSet) {

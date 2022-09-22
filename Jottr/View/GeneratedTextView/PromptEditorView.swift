@@ -100,7 +100,7 @@ struct PromptEditorView: View {
                 .listRowSeparator(.hidden)
                 
                 Section {
-                    CustomTextEditor(placeholder: premisePlaceholder, text: $textGeneration.primary.text, title: $title)
+                    TextEditorView(placeholder: premisePlaceholder, text: $textGeneration.primary.text, title: $title)
                         .focused($isInputActive)
                         .foregroundColor(.primary)
                         .font(.custom("Futura", size: 13)) //HelveticaNeue
