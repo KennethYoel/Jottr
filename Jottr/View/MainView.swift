@@ -14,7 +14,7 @@ struct MainView: View {
     @Binding var hadLaunched: Bool
     
     var body: some View {
-        // initial view
+        // initial view - a random quote page "I have been blessed with a wilder mind."
         NavigationView {
             ContentView(currentView: .library) //, hadLaunched: $hadLaunched
         }

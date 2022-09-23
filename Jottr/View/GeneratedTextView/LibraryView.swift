@@ -36,8 +36,6 @@ struct LibraryView: View {
         }()
     let currentDate = Date()
     
-    let genres = [" Fantasy and Science Fiction", "Horror", "Children’s Fiction", "Mystery", "Romance", "Thriller"]
-    
     var body: some View {
         Form {
             Section {

@@ -30,7 +30,7 @@ struct PromptEditorView: View {
     
     @State private var theme: String = ""
     @State private var setTheme: CommonTheme? = nil
-//    @State private var selection = "None"
+    @State private var setGenre: CommonGenre? = nil
     @State private var bannedWord: String = ""
     @State private var showingStoryTellerScreen = false
     @State private var message: String = ""
@@ -69,18 +69,15 @@ struct PromptEditorView: View {
                     TextField(themePlaceholder, text: $theme) // use onChange to update the placeholder
                         .focused($isInputActive)
                         .foregroundColor(.primary)
-                        .font(.custom("Futura", size: 13)) // use either Futura, Caslon, or Johnston-the London underground typeface
+                        .font(.custom("Futura", size: 15)) // use either Futura, Caslon, or Johnston-the London underground typeface
                         .onReceive(Just(theme)) { _ in limitText(textLimit) }
                     
-                    HStack {
-                        Spacer()
-                        ThemePicker(themeChoices: $setTheme)
-                            .padding()
-                    }
+                        ThemePickerView(themeChoices: $setTheme)
+                            .padding(.trailing)
                 } header: {
                     HStack {
                         Text("_Theme_")
-                            .font(.custom("Futura", size: 13))
+                            .font(.custom("Futura", size: 17))
                         
                         // popover with instructional information
                         Button {
@@ -103,14 +100,17 @@ struct PromptEditorView: View {
                     TextEditorView(placeholder: premisePlaceholder, text: $textGeneration.primary.text, title: $title)
                         .focused($isInputActive)
                         .foregroundColor(.primary)
-                        .font(.custom("Futura", size: 13)) //HelveticaNeue
+                        .font(.custom("Futura", size: 15))
                         .onReceive(Just(textGeneration.primary.text)) { _ in limitText(textLimit) }
                         .onChange(of: textGeneration.primary.text) { _ in detector.send() }
                         .onReceive(publisher) { save() }
+                    
+                    GenrePickerView(genreChoices: $setGenre)
+                        .padding(.trailing)
                 } header: {
                     HStack {
                         Text("_Premise_")
-                            .font(.custom("Futura", size: 13))
+                            .font(.custom("Futura", size: 17))
 
                         // popover with instructional information
                         Button {
@@ -132,14 +132,16 @@ struct PromptEditorView: View {
                     HStack {
                         Spacer()
                         
-                        Button("Write It") {
+                        Button {
                            // TODO: need to make sure this is added once, maybe use boolean
                            let text = promptDesign(theme, textGeneration.primary.text)
                            textGeneration.getTextResponse(moderated: false, sessionStory: text)
                            showingStoryTellerScreen.toggle()
        //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
+                        } label: {
+                            Image(systemName: "arrow.up.circle.fill")
                         }
-                        .buttonStyle(CustomButton())
+                        .buttonStyle(SendButton())
                     }
                 }
             }
@@ -201,7 +203,8 @@ struct PromptEditorView: View {
     }
     
     func promptDesign(_ mainTheme: String = "", _ storyPrompt: String) -> String {
-        var theTheme: String = setTheme?.stringComparisons ?? ""
+        var theTheme: String = setTheme?.id ?? ""
+        var theGenre: String = setGenre?.id ?? ""
 //        // Six common themes in literature are:
 //        switch themeChoices {
 //        case .goodVsEvil:
@@ -224,7 +227,7 @@ struct PromptEditorView: View {
         
         let prompt = """
         Topic: \(theTheme)
-        Seventy-Sentence Fantasy Story: \(storyPrompt)
+        Seventy-Sentence \(theGenre) Story: \(storyPrompt)
         """
 //        "The following is a conversation with a " + mainDescription
 //            + ". " + "This " + mainDescription + " is" + adjectives + "."

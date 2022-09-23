@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-enum PremiseSample { //: String, CaseIterable, Identifiable
+enum PremiseExamples: String, CaseIterable, Identifiable {
     // Six common themes in literature are:
     case  goodVsEvil, love, redemption, courageAndPerseverance, comingOfAge, revenge
     
-    var stringComparisons: String {
+    var id: String {
         switch self {
         case .goodVsEvil:
             return "Good vs. Evil"
@@ -29,50 +29,26 @@ enum PremiseSample { //: String, CaseIterable, Identifiable
     }
 }
 
-struct PremisePicker: View {
+struct PremisePickerView: View {
     // MARK: Properties
     
-    @Binding var themeChoices: CommonTheme?
+    @Binding var premiseChoices: CommonTheme?
     @State private var showingThemeOptions = false
     
     var body: some View {
-        Button {
-            showingThemeOptions = true
-        } label: {
-            Label(themeChoices?.stringComparisons ?? "Choose a Theme", systemImage: "theatermasks")
+        Picker("Premise", selection: $premiseChoices) {
+            ForEach(PremiseExamples.allCases) {
+                Text($0.id).tag($0)
+                    .font(.custom("Futura", size: 17))
+            }
         }
-        .actionSheet(isPresented: $showingThemeOptions) {
-            ActionSheet(title: Text("Choose a common theme for the prompt"),
-                buttons: [
-                    .default(Text(CommonTheme.goodVsEvil.stringComparisons)) {
-                        themeChoices = .goodVsEvil
-                    },
-                    .default(Text(CommonTheme.love.stringComparisons)) {
-                        themeChoices = .love
-                    },
-                    .default(Text(CommonTheme.redemption.stringComparisons)) {
-                        themeChoices = .redemption
-                    },
-                    .default(Text(CommonTheme.courageAndPerseverance.stringComparisons)) {
-                        themeChoices = .courageAndPerseverance
-                    },
-                    .default(Text(CommonTheme.comingOfAge.stringComparisons)) {
-                        themeChoices = .comingOfAge
-                    },
-                    .default(Text(CommonTheme.revenge.stringComparisons)) {
-                        themeChoices = .revenge
-                    },
-                    .cancel()
-                ]
-            )
-        }
-        .buttonStyle(.plain)
+        .pickerStyle(.menu)
     }
 }
 
 struct PremisePicker_Previews: PreviewProvider {
     static var previews: some View {
-        PremisePicker(themeChoices: .constant(.goodVsEvil))
+        PremisePickerView(premiseChoices: .constant(.goodVsEvil))
     }
 }
 

@@ -45,13 +45,15 @@ struct StoryEditorView: View {
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
                         if isInputActive {
-                            ThemePicker(themeChoices: $setTheme)
+                            ThemePickerView(themeChoices: $setTheme)
                                 .padding()
                             
-                            Button("Write It") {
+                            Button {
                                 textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
+                            } label: {
+                                Image(systemName: "arrow.up.circle.fill")
                             }
-                            .buttonStyle(CustomButton())
+                            .buttonStyle(SendButton())
                             .padding()
                         } else {
                             NavigationLink(destination: StoryEditorView()) {
@@ -86,7 +88,7 @@ struct StoryEditorView: View {
                     ToolbarItemGroup(placement: .bottomBar) {
                         Spacer()
 
-                        ThemePicker(themeChoices: $setTheme)
+                        ThemePickerView(themeChoices: $setTheme)
                             .padding()
                     }
                     

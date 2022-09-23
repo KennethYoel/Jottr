@@ -19,21 +19,19 @@ struct PopoverTextView: View {
     Let's start with a theme, which is the central idea or underlying meaning you the writer and the AI explore in your
     literary work.
     
-    E.g. "What comes around, goes around."
-    
     The theme of a story can be conveyed using characters, setting, dialogue, plot, or a combination of all of these
     elements.
     
     For example in simpler stories, the theme may be a moral tale or message: “When you work hard and persevere, you can
     achieve your goals. Slow and steady wins the race.”
     
-    You maybe wondering what is the difference between a theme and genre?
+    You maybe wondering what is the difference between a genre and theme?
     
     Genre is the kind of story: Comedy, drama, romance, sci-fi, etc.
 
     Theme is what the story is really about.
 
-    Examples:
+    E.g.
 
     Lawrence of Arabia (1962)
 
@@ -62,7 +60,7 @@ struct PopoverTextView: View {
     needs.
     3. The situation or obstacle: What crisis or extraordinary situation does your protagonist find themselves in?
     
-    You may also be wondering what is the difference between a premise and theme?
+    You may also be wondering what is the difference between a theme and premise?
     
     The theme is the underlying message behind the story. It can usually be boiled down to a couple of words that sum up what a
     plot is built around. For example it could be something like ‘family ties’, ‘overcoming adversity’ or ‘coming of age’.
