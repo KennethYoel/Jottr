@@ -14,14 +14,14 @@ import SwiftUI
  */
 struct TextEditorView: View {
     
-    let placeholder: String
-    @Binding var text: String
     @Binding var title: String
+    @Binding var text: String
+    let placeholder: String
         
     var body: some View {
         VStack {
             TextField("Title", text: $title)
-                .font(.custom("Futura", size: 13))
+                .font(.custom("Futura", size: 17))
             ZStack(alignment: .leading) {
                 if text.isEmpty {
                    VStack {
@@ -29,13 +29,14 @@ struct TextEditorView: View {
                             .padding(.top, 10)
                             .padding(.leading, 6)
                             .opacity(0.7)
+                       
                         Spacer()
                     }
                 }
                 
                 VStack {
                     TextEditor(text: $text)
-                        .frame(minHeight: 150, maxHeight: 300)
+                        .frame(minHeight: 150, maxHeight: .infinity)
                         .opacity(text.isEmpty ? 0.85 : 1)
                     
                     Spacer()

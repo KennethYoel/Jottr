@@ -18,6 +18,9 @@ struct StoryEditorView: View {
     
     @State private var progress = 0.2
     @State private var setTheme: CommonTheme = .custom
+    
+    @State private var storyTitle: String = ""
+    @State private var storyEditorPlaceholder: String = "Perhap's let's begin with once upon a time..."
    
     @State private var isShareViewPresented: Bool = false
     @State private var isShowingPromptEditorScreen: Bool = false
@@ -36,7 +39,7 @@ struct StoryEditorView: View {
 //                }
 //                textGeneration.sessionPrompt[0].text
 //            }
-        TextEditor(text: $textGeneration.sessionStory)
+        TextEditorView(title: $storyTitle, text: $textGeneration.sessionStory, placeholder: storyEditorPlaceholder)
             .focused($isInputActive)
             .padding([.leading, .top, .trailing,])
             .transition(.opacity)
