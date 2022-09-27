@@ -11,18 +11,17 @@ import SwiftUI
 struct StoryEditorView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     @Environment(\.dismiss) var dismiss
     
-    @State private var progress = 0.2
-    @State private var setTheme: CommonTheme? = nil
-   
-    @State private var isShowingAccountScreen = false
-    @State private var isShowingLoginScreen = false
-    @State private var isShowingPromptEditorScreen = false
-    @State private var isShowingSearchScreen = false
-    
     @FocusState private var isInputActive: Bool
+    
+    @State private var progress = 0.2
+    @State private var setTheme: CommonTheme = .custom
+   
+    @State private var isShareViewPresented: Bool = false
+    @State private var isShowingPromptEditorScreen: Bool = false
+    @State private var isShowingEditorToolbar: Bool = false
     
     var body: some View {
 //        ProgressView(value: progress, total: 1.0)
@@ -38,74 +37,53 @@ struct StoryEditorView: View {
 //                textGeneration.sessionPrompt[0].text
 //            }
         TextEditor(text: $textGeneration.sessionStory)
-                .focused($isInputActive)
-                .padding([.leading, .top, .trailing,])
-                .transition(.opacity)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        if isInputActive {
-                            ThemePickerView(themeChoices: $setTheme)
-                                .padding()
-                            
-                            Button {
-                                textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
-                            } label: {
-                                Image(systemName: "arrow.up.circle.fill")
-                            }
-                            .buttonStyle(SendButton())
-                            .padding()
-                        } else {
-                            NavigationLink(destination: StoryEditorView()) {
-                                Label("New Story", systemImage: "square.and.pencil")
-                            }
-                            
-                            Menu {
-                                Button { // this belongs with create a story view
-                                    isShowingPromptEditorScreen.toggle()
-                                } label: {
-                                    Label("Prompt Editor", systemImage: "doc.badge.gearshape")
-                                }
-                                
-                                Button {
-                                    isShowingLoginScreen.toggle()
-                                } label: {
-                                    Label("Login", systemImage: "lanyardcard")
-                                }
-                                
-                                Button {
-                //                        showingImagePicker.toggle()
-                                } label: {
-                                    Text("Images")
-                                    Image(systemName: "arrow.up.and.down.circle")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                           }
-                        }
-                    }
-                    
-                    ToolbarItemGroup(placement: .bottomBar) {
-                        Spacer()
-
+            .focused($isInputActive)
+            .padding([.leading, .top, .trailing,])
+            .transition(.opacity)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    if isInputActive {
                         ThemePickerView(themeChoices: $setTheme)
                             .padding()
-                    }
-                    
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
                         
                         Button {
-                            hideKeyboardAndSave()
+                            textGeneration.getTextResponse(moderated: false, sessionStory: textGeneration.sessionStory)
                         } label: {
-                            Image(systemName: "keyboard.chevron.compact.down")
+                            Image(systemName: "arrow.up.circle.fill") //chevron.compact.down
                         }
+                        .buttonStyle(SendButton())
+                        .padding()
                     }
                 }
-                .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
-                .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
-                .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
-                .sheet(isPresented: $isShowingAccountScreen) { AccountView() }
+                
+                EditorToolbar(showingShareView: $isShareViewPresented, showingPromptEditorScreen: $isShowingPromptEditorScreen, showingKeyboard: _isInputActive)
+                
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Spacer()
+
+                    ThemePickerView(themeChoices: $setTheme)
+                        .padding()
+                }
+                
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    
+                    Button {
+                        hideKeyboardAndSave()
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                    }
+                }
+            }
+            .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+            // the sheet below is shown when isShareViewPresented is true
+            .sheet(isPresented: $isShareViewPresented, onDismiss: {
+                debugPrint("Dismiss")
+            }, content: {
+                ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
+            })
+        
     }
     
     // MARK: Helper Methods

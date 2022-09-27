@@ -12,36 +12,31 @@ import SwiftUI
 struct PromptEditorView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.dismiss) var dismissAddStory
+    @Environment(\.dismiss) var dismissEditPrompt
+    //    @Binding var hadLaunched: Bool
     
     @FocusState private var isInputActive: Bool
     
 //    @StateObject var loginVM = LoginViewModel()
-//    @Binding var hadLaunched: Bool
+
     @State private var explainerContent: Explainer = .themeExplainer
     @State private var isShowingThemePopover: Bool = false
     @State private var isShowingPremisePopover: Bool = false
     @State private var isShowingBannedPopover: Bool = false
-    @State private var alertUser: Bool = false
-    @State private var isCommonTheme: Bool = false
-    @State private var showingThemeOptions = false
     
-    @State private var theme: String = ""
-    @State private var setTheme: CommonTheme? = nil
-    @State private var setGenre: CommonGenre? = nil
-    @State private var bannedWord: String = ""
-    @State private var showingStoryTellerScreen = false
+    @State private var alertUser: Bool = false
     @State private var message: String = ""
     
+    @State private var theme: String = ""
+    @State private var showingStoryEditorScreen = false
+    
     @State private var title = ""
-    @State private var author = ""
-    @State private var rating = 3
     @State private var genre = ""
     @State private var review = ""
     
-    let themePlaceholder: String = "Type the theme here or choose a common one ⬇️."
+    let themePlaceholder: String = "Type the theme here or pick one ⬇️."
     let premisePlaceholder: String = "Type the premise here"
     let textLimit = 350
     let detector = PassthroughSubject<Void, Never>()
@@ -72,7 +67,7 @@ struct PromptEditorView: View {
                         .font(.custom("Futura", size: 15)) // use either Futura, Caslon, or Johnston-the London underground typeface
                         .onReceive(Just(theme)) { _ in limitText(textLimit) }
                     
-                        ThemePickerView(themeChoices: $setTheme)
+                    ThemePickerView(themeChoices: $textGeneration.setTheme)
                             .padding(.trailing)
                 } header: {
                     HStack {
@@ -105,7 +100,7 @@ struct PromptEditorView: View {
                         .onChange(of: textGeneration.primary.text) { _ in detector.send() }
                         .onReceive(publisher) { save() }
                     
-                    GenrePickerView(genreChoices: $setGenre)
+                    GenrePickerView(genreChoices: $textGeneration.setGenre)
                         .padding(.trailing)
                 } header: {
                     HStack {
@@ -127,26 +122,29 @@ struct PromptEditorView: View {
                         } 
                     }
                 }
-                
-                Section {
-                    HStack {
-                        Spacer()
-                        
-                        Button {
-                           // TODO: need to make sure this is added once, maybe use boolean
-                           let text = promptDesign(theme, textGeneration.primary.text)
-                           textGeneration.getTextResponse(moderated: false, sessionStory: text)
-                           showingStoryTellerScreen.toggle()
-       //                    UserDefaults.standard.setValue(true, forKey: "hadLaunched")
-                        } label: {
-                            Image(systemName: "arrow.up.circle.fill")
+                if !isInputActive {
+                    Section {
+                        HStack {
+                            Spacer()
+                            
+                            Button {
+                               // TODO: need to make sure this is added once, maybe use boolean
+                                let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
+                                textGeneration.getTextResponse(moderated: false, sessionStory: text)
+                                showingStoryEditorScreen.toggle()
+//                                UserDefaults.standard.setValue(true, forKey: "hadLaunched")
+                            } label: {
+                                Image(systemName: "arrow.up.circle.fill")
+                            }
+                            .buttonStyle(SendButton())
+                            
+//                            NavigationLink(destination: StoryEditorView(), isActive: $showingStoryEditorScreen) { }
                         }
-                        .buttonStyle(SendButton())
                     }
                 }
             }
             // next screen of adding a book review is shown when showingAddScreen is true
-            .sheet(isPresented: $showingStoryTellerScreen) {
+            .fullScreenCover(isPresented: $showingStoryEditorScreen) {
                 StoryEditorView()
             }
             .alert(title, isPresented: $alertUser, presenting: message) {_ in
@@ -156,10 +154,22 @@ struct PromptEditorView: View {
             .navigationTitle("Prompt Editor")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismissAddStory()
+                    if isInputActive {
+                        Button {
+                            let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
+                            textGeneration.getTextResponse(moderated: false, sessionStory: text)
+                            showingStoryEditorScreen.toggle()
+                        } label: {
+                            Image(systemName: "arrow.up.circle.fill")
+                        }
+                        .buttonStyle(SendButton())
+                        .padding()
+                    } else {
+                        Button("Cancel") {
+                            dismissEditPrompt()
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
                 
                 ToolbarItemGroup(placement: .keyboard) {
@@ -200,38 +210,5 @@ struct PromptEditorView: View {
             theme = String(theme.prefix(upper))
             textGeneration.sessionPrompt[0].text = String(textGeneration.primary.text.prefix(upper))
         }
-    }
-    
-    func promptDesign(_ mainTheme: String = "", _ storyPrompt: String) -> String {
-        var theTheme: String = setTheme?.id ?? ""
-        var theGenre: String = setGenre?.id ?? ""
-//        // Six common themes in literature are:
-//        switch themeChoices {
-//        case .goodVsEvil:
-//            theTheme = themeChoices.rawValue
-//        case .love:
-//            theTheme = themeChoices.rawValue
-//        case .redemption:
-//            theTheme = themeChoices.rawValue
-//        case .courageAndPerseverance:
-//            theTheme = themeChoices.rawValue
-//        case .comingOfAge:
-//            theTheme = themeChoices.rawValue
-//        case .revenge:
-//            theTheme = themeChoices.rawValue
-//        }
-        
-        if !isCommonTheme {
-            theTheme = mainTheme
-        }
-        
-        let prompt = """
-        Topic: \(theTheme)
-        Seventy-Sentence \(theGenre) Story: \(storyPrompt)
-        """
-//        "The following is a conversation with a " + mainDescription
-//            + ". " + "This " + mainDescription + " is" + adjectives + "."
-//        Horror Story: He always stops crying when I pour the milk on his cereal. I just have to remember not to let him see his face on the carton (the "." is the stop sequence)
-        return prompt
     }
 }

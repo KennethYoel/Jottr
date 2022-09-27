@@ -7,10 +7,12 @@
 
 import Foundation
 
-class TextGeneration: ObservableObject {
+class GenTextViewModel: ObservableObject {
     @Published var sessionPrompt = [SessionPrompt]()
     @Published var title: String = ""
     @Published var sessionStory: String = ""
+    @Published var setTheme: CommonTheme = .custom
+    @Published var setGenre: CommonGenre = .fantasy
     
     var primary: SessionPrompt {
         get {
@@ -70,6 +72,24 @@ class TextGeneration: ObservableObject {
         var showAlert = AlertView()
         showAlert.title = title
         showAlert.message = message
+    }
+    
+    func promptDesign(_ mainTheme: String = "", _ storyPrompt: String) -> String {
+        var theTheme: String = ""
+        let theGenre: String = setGenre.id
+        
+        if setTheme.id == "Custom" {
+            theTheme = mainTheme
+        } else {
+            theTheme = setTheme.id
+        }
+        
+        let prompt = """
+        Topic: \(theTheme)
+        Seventy-Sentence \(theGenre) Story: \(storyPrompt)
+        """
+        
+        return prompt
     }
     
     func appendToStory(sessionStory: String) {

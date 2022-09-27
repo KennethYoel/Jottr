@@ -12,7 +12,7 @@ struct JottrApp: App {
     // MARK: Properties
     
     // create text generator object
-    @StateObject var textGeneration = TextGeneration()
+    @StateObject var textGeneration = GenTextViewModel()
     // @AppStorage stores user defaults similarly as using userDefaults.standard
     @AppStorage("hadLauncehd") private var hadLaunched = false //UserDefaults.standard.bool(forKey: "hadLaunched")
     

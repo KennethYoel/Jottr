@@ -10,7 +10,7 @@ import SwiftUI
 struct SearchView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     @Environment(\.isSearching) private var isSearching: Bool
     @Environment(\.dismissSearch) private var dismissSearch
     @Environment(\.dismiss) private var dismiss

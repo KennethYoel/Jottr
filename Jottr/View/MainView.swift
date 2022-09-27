@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     @Binding var hadLaunched: Bool
     
     var body: some View {
@@ -24,6 +24,6 @@ struct MainView: View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         MainView(hadLaunched: .constant(false))
-            .environmentObject(TextGeneration())
+            .environmentObject(GenTextViewModel())
     }
 }

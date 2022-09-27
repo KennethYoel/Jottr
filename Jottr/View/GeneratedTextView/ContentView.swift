@@ -8,26 +8,26 @@
 import SwiftUI
 
 enum LoadingState {
-    case library, storyList, storyEditor
+    case library, storyList, storyEditor //(Binding<Bool>)
 }
 
 struct ContentView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     var currentView = LoadingState.library
     
     // MARK: View
     
     var body: some View {
-            switch currentView {
-            case .library:
-                LibraryView()
-            case .storyList:
-                StoryListView()
-            case .storyEditor:
-                StoryEditorView()
-            }
+        switch currentView {
+        case .library:
+            LibraryView()
+        case .storyList:
+            StoryListView()
+        case .storyEditor:
+            StoryEditorView()
+        }   
     }
 }
 
@@ -44,7 +44,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ContentView()
-                .environmentObject(TextGeneration())
+                .environmentObject(GenTextViewModel())
         }
         .previewInterfaceOrientation(.portrait)
     }

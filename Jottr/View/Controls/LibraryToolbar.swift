@@ -5,9 +5,10 @@
 //  Created by Kenneth Gutierrez on 9/22/22.
 //
 
+import Foundation
 import SwiftUI
 
-struct ItemsToolbar: ToolbarContent {
+struct LibraryToolbar: ToolbarContent {
     
     @Binding var showingPromptEditorScreen: Bool
     @Binding var showingLoginScreen: Bool
@@ -20,12 +21,6 @@ struct ItemsToolbar: ToolbarContent {
             }
             
             Menu {
-                Button { // this belongs with create a story view
-                    showingPromptEditorScreen.toggle()
-                } label: {
-                    Label("Prompt Editor", systemImage: "doc.badge.gearshape")
-                }
-                
                 Button {
                     showingLoginScreen.toggle()
                 } label: {
@@ -33,10 +28,16 @@ struct ItemsToolbar: ToolbarContent {
                 }
                 
                 Button {
+                    showingLoginScreen.toggle()
+                } label: {
+                    Label("Feedback", systemImage: "pencil.and.outline")
+                }
+                
+                Button {
 //                        showingImagePicker.toggle()
                 } label: {
-                    Text("Images")
-                    Image(systemName: "arrow.up.and.down.circle")
+                    Text("Settings")
+                    Image(systemName: "slider.horizontal.3")
                 }
             } label: {
                  Image(systemName: "gearshape.2")

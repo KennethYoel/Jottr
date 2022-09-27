@@ -9,7 +9,7 @@ import SwiftUI
 
 enum CommonTheme: String, CaseIterable, Identifiable {
     // Six common themes in literature are:
-    case  goodVsEvil, love, redemption, courageAndPerseverance, comingOfAge, revenge
+    case  goodVsEvil, love, redemption, courageAndPerseverance, comingOfAge, revenge, custom
     
     var id: String {
         switch self {
@@ -25,6 +25,8 @@ enum CommonTheme: String, CaseIterable, Identifiable {
             return "Coming of Age"
         case .revenge:
             return "Revenge"
+        case .custom:
+            return "Custom"
         }
     }
 }
@@ -32,20 +34,20 @@ enum CommonTheme: String, CaseIterable, Identifiable {
 struct ThemePickerView: View {
     // MARK: Properties
     
-    @Binding var themeChoices: CommonTheme?
+    @Binding var themeChoices: CommonTheme
     @State private var showingThemeOptions = false
     
     var body: some View {
         HStack {
             Spacer()
             
-            Text("Choose a theme >_")
-                .font(.custom("Futura", size: 17))
+            Text("Theme_")
+                .font(.custom("Futura", size: 15))
             
             Picker("Theme", selection: $themeChoices) {
                 ForEach(CommonTheme.allCases) {
                     Text($0.id).tag($0)
-                        .font(.custom("Futura", size: 17))
+                        .font(.custom("Futura", size: 15))
                 }
             }
             .pickerStyle(.menu)
@@ -55,6 +57,6 @@ struct ThemePickerView: View {
 
 struct ThemePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        ThemePickerView(themeChoices: .constant(.goodVsEvil))
+        ThemePickerView(themeChoices: .constant(.custom))
     }
 }

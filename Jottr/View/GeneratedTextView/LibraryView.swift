@@ -10,7 +10,7 @@ import SwiftUI
 struct LibraryView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: TextGeneration
+    @EnvironmentObject var textGeneration: GenTextViewModel
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
     @State private var isShowingAccountScreen = false
@@ -46,6 +46,7 @@ struct LibraryView: View {
                     Label("Your Narratives", systemImage: "archivebox")
                         .font(.custom("Futura", size: 13))
                 }
+                .isDetailLink(false)
                 .buttonStyle(.plain)
                 
                 // a link to a list of premises written by the user
@@ -114,7 +115,7 @@ struct LibraryView: View {
         .transition(.opacity)
         .navigationTitle("🖋Jottr") //highlighter
         .toolbar {
-            ItemsToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
         }
 //        .onChange(of: inputImage) { _ in loadImage() }
         .safeAreaInset(edge: .bottom, alignment: .trailing) {

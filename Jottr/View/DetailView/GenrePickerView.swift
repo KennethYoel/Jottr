@@ -34,20 +34,20 @@ enum CommonGenre: String, CaseIterable, Identifiable {
 struct GenrePickerView: View {
     // MARK: Properties
     
-    @Binding var genreChoices: CommonGenre?
+    @Binding var genreChoices: CommonGenre
     @State private var showingGenreOptions = false
     
     var body: some View {
         HStack {
             Spacer()
             
-            Text("Choose a genre >_")
-                .font(.custom("Futura", size: 17))
+            Text("Genre_")
+                .font(.custom("Futura", size: 15))
             
             Picker("Genre", selection: $genreChoices) {
                 ForEach(CommonGenre.allCases) {
                     Text($0.id).tag($0)
-                        .font(.custom("Futura", size: 17))
+                        .font(.custom("Futura", size: 15))
                 }
             }
             .pickerStyle(.menu)
