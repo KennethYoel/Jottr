@@ -77,7 +77,11 @@ struct StoryListView: View {
         .toolbar {
             LibraryToolbar(showingStoryEditorScreen: $isShowingStoryEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
         }
-//        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+        .fullScreenCover(isPresented: $isShowingStoryEditorScreen, content: {
+            NavigationView {
+                StoryEditorView()
+            }
+        })
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
 //        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
     }

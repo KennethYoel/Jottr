@@ -28,7 +28,7 @@ struct StoryEditorView: View {
     @State private var isShowingEditorToolbar: Bool = false
     
     var body: some View {
-        NavigationView {
+        
     //        ProgressView(value: progress, total: 1.0)
     //            .progressViewStyle(GaugeProgressStyle())
     //            .frame(width: 200, height: 200)
@@ -100,7 +100,7 @@ struct StoryEditorView: View {
                 }, content: {
                     ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
                 })
-        }
+        
     }
     
     // MARK: Helper Methods

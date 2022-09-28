@@ -143,7 +143,9 @@ struct LibraryView: View {
         .fullScreenCover(isPresented: $isShowingStoryEditorScreen, onDismiss: {
             isStoryListActive.toggle()
         }, content: {
-            StoryEditorView()
+            NavigationView {
+                StoryEditorView()
+            }
         })
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
         .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
