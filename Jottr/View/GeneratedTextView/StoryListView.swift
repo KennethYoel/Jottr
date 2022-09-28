@@ -13,7 +13,7 @@ struct StoryListView: View {
     @EnvironmentObject var textGeneration: GenTextViewModel
     @State private var isShareViewPresented: Bool = false
     @State private var isShowingLoginScreen = false
-    @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingStoryEditorScreen = false
     @State private var isShowingFeedbackScreen = false
     @State private var isShowingSettingsScreen = false
     @State private var isActive: Bool = false
@@ -42,7 +42,7 @@ struct StoryListView: View {
                      make our code work.
                      */
                     NavigationLink {
-                        StoryEditorView() //currentView: $currentView.animation(.easeInOut)
+                        GenTextDetailView() //currentView: $currentView.animation(.easeInOut)
 //                        Text(book.title ?? "Unknown Title")
                     } label: {
                         VStack(alignment: .leading) {
@@ -75,7 +75,7 @@ struct StoryListView: View {
         .transition(.opacity)
         .navigationTitle("Collection")
         .toolbar {
-            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
+            LibraryToolbar(showingStoryEditorScreen: $isShowingStoryEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
         }
 //        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }

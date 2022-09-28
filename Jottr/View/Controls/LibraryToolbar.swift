@@ -10,16 +10,21 @@ import SwiftUI
 
 struct LibraryToolbar: ToolbarContent {
     
-    @Binding var showingPromptEditorScreen: Bool
+    @Binding var showingStoryEditorScreen: Bool
     @Binding var showingLoginScreen: Bool
     @Binding var showingFeedbackScreen: Bool
     @Binding var showingSettingsScreen: Bool
     
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            NavigationLink(destination: StoryEditorView()) {
+            Button {
+                showingStoryEditorScreen.toggle()
+            } label: {
                 Label("New Story", systemImage: "square.and.pencil")
             }
+//            NavigationLink(destination: StoryEditorView()) {
+//                Label("New Story", systemImage: "square.and.pencil")
+//            }
             
             Menu {
                 Button {

@@ -27,6 +27,7 @@
 		5752803C28D0CF7E00CD8A9F /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5752803B28D0CF7E00CD8A9F /* AlertView.swift */; };
 		575F623628D0A2B500EFE7C0 /* ActivityView in Frameworks */ = {isa = PBXBuildFile; productRef = 575F623528D0A2B500EFE7C0 /* ActivityView */; };
 		575F623828D0A85700EFE7C0 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575F623728D0A85700EFE7C0 /* UIViewController.swift */; };
+		5775B5DC28E45D1600CAD517 /* GenTextDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5775B5DB28E45D1600CAD517 /* GenTextDetailView.swift */; };
 		5777FC0D28DC5AD70035117B /* LibraryToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5777FC0C28DC5AD60035117B /* LibraryToolbar.swift */; };
 		5777FC1028DC7FE50035117B /* HideSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5777FC0F28DC7FE50035117B /* HideSectionView.swift */; };
 		5779136B28A4D40D00EF0E9B /* PromptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5779136A28A4D40D00EF0E9B /* PromptEditorView.swift */; };
@@ -68,6 +69,7 @@
 		574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIRequest.swift; sourceTree = "<group>"; };
 		5752803B28D0CF7E00CD8A9F /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		575F623728D0A85700EFE7C0 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
+		5775B5DB28E45D1600CAD517 /* GenTextDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenTextDetailView.swift; sourceTree = "<group>"; };
 		5777FC0C28DC5AD60035117B /* LibraryToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryToolbar.swift; sourceTree = "<group>"; };
 		5777FC0F28DC7FE50035117B /* HideSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideSectionView.swift; sourceTree = "<group>"; };
 		5779136A28A4D40D00EF0E9B /* PromptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEditorView.swift; sourceTree = "<group>"; };
@@ -143,7 +145,7 @@
 			children = (
 				57AEB8C728D0612D00034D7B /* MainView.swift */,
 				57AE974E28D7963000A75B3A /* GeneratedTextView */,
-				57AE975128D89C4E00A75B3A /* DetailView */,
+				57AE975128D89C4E00A75B3A /* GeneratedTextDetail */,
 				5777FC0E28DC5E4C0035117B /* Controls */,
 				57B1F55028D1E9C5000B72CE /* ImageSaver.swift */,
 				5752803B28D0CF7E00CD8A9F /* AlertView.swift */,
@@ -258,9 +260,10 @@
 			path = GeneratedTextView;
 			sourceTree = "<group>";
 		};
-		57AE975128D89C4E00A75B3A /* DetailView */ = {
+		57AE975128D89C4E00A75B3A /* GeneratedTextDetail */ = {
 			isa = PBXGroup;
 			children = (
+				5775B5DB28E45D1600CAD517 /* GenTextDetailView.swift */,
 				57C0C71928DB43B7005B7919 /* GaugeProgressStyle.swift */,
 				57DBD5B128D9C65400869002 /* TextEditorView.swift */,
 				57DBD5AF28D9C4B700869002 /* PopoverTextView.swift */,
@@ -269,7 +272,7 @@
 				57DBD5B328DA3C3800869002 /* PremisePickerView.swift */,
 				5777FC0F28DC7FE50035117B /* HideSectionView.swift */,
 			);
-			path = DetailView;
+			path = GeneratedTextDetail;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -351,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57C0C71828DB41E6005B7919 /* SendButton.swift in Sources */,
+				5775B5DC28E45D1600CAD517 /* GenTextDetailView.swift in Sources */,
 				5745669228D3A5840002DB98 /* SearchView.swift in Sources */,
 				57D3BF6D28CBABDA009A710A /* LibraryView.swift in Sources */,
 				5777FC1028DC7FE50035117B /* HideSectionView.swift in Sources */,

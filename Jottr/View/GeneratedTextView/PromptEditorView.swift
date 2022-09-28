@@ -122,32 +122,26 @@ struct PromptEditorView: View {
                         } 
                     }
                 }
-                if !isInputActive {
-                    Section {
-                        HStack {
-                            Spacer()
-                            
-                            Button {
+//                if !isInputActive {
+//                    Section {
+//                        HStack {
+//                            Spacer()
+//
+//                            Button {
                                // TODO: need to make sure this is added once, maybe use boolean
-                                dismissPromptEdit()
+//                                dismissPromptEdit()
 //                                let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
 //                                textGeneration.getTextResponse(moderated: false, sessionStory: text)
 //                                showingStoryEditorScreen.toggle()
 //                                UserDefaults.standard.setValue(true, forKey: "hadLaunched")
-                            } label: {
-                                Image(systemName: "arrow.up.circle.fill")
-                            }
-                            .buttonStyle(SendButton())
-                            
-//                            NavigationLink(destination: StoryEditorView(), isActive: $showingStoryEditorScreen) { EmptyView() }
-                        }
-                    }
-                }
+//                            } label: {
+//                                Image(systemName: "arrow.up.circle.fill")
+//                            }
+//                            .buttonStyle(SendButton())
+//                        }
+//                    }
+//                }
             }
-            // next screen of adding a book review is shown when showingAddScreen is true
-//            .fullScreenCover(isPresented: $showingStoryEditorScreen) {
-//                StoryEditorView()
-//            }
             .alert(title, isPresented: $alertUser, presenting: message) {_ in
                 Button("OK") {}
             }
@@ -155,23 +149,13 @@ struct PromptEditorView: View {
             .navigationTitle("Prompt Editor")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if isInputActive {
-                        Button {
-                            dismissPromptEdit()
-//                            let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
-//                            textGeneration.getTextResponse(moderated: false, sessionStory: text)
-//                            showingStoryEditorScreen.toggle()
-                        } label: {
-                            Image(systemName: "arrow.up.circle.fill")
-                        }
-                        .buttonStyle(SendButton())
-                        .padding()
-                    } else {
-                        Button("Cancel") {
-                            dismissPromptEdit()
-                        }
-                        .buttonStyle(.plain)
+                    Button {
+                        dismissPromptEdit()
+                    } label: {
+                        Image(systemName: "arrow.up.circle.fill")
                     }
+                    .buttonStyle(SendButton())
+                    .padding()
                 }
                 
                 ToolbarItemGroup(placement: .keyboard) {
