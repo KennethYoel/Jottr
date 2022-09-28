@@ -19,8 +19,9 @@ struct StoryEditorView: View {
     @State private var progress = 0.2
     @State private var setTheme: CommonTheme = .custom
     
+    @State private var theme: String = ""
     @State private var storyTitle: String = ""
-    @State private var storyEditorPlaceholder: String = "Perhap's let's begin with once upon a time..."
+    @State private var storyEditorPlaceholder: String = "Perhap's we can begin with once upon a time..."
    
     @State private var isShareViewPresented: Bool = false
     @State private var isShowingPromptEditorScreen: Bool = false
@@ -79,7 +80,11 @@ struct StoryEditorView: View {
                     }
                 }
             }
-            .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+            .sheet(isPresented: $isShowingPromptEditorScreen, onDismiss: {
+                generateStory(themeOfStory: theme)
+            }, content: {
+                PromptEditorView(theme: $theme)
+            })
             // the sheet below is shown when isShareViewPresented is true
             .sheet(isPresented: $isShareViewPresented, onDismiss: {
                 debugPrint("Dismiss")
@@ -94,7 +99,13 @@ struct StoryEditorView: View {
     private func hideKeyboardAndSave() {
         isInputActive = false
         save()
-   }
+    }
+    
+    func generateStory(themeOfStory: String) {
+        // TODO: need to make sure this is added once, maybe use boolean
+         let text = textGeneration.promptDesign(themeOfStory, textGeneration.primary.text)
+         textGeneration.getTextResponse(moderated: false, sessionStory: text)
+    }
     
    private func save() {
         //add a story
@@ -108,5 +119,5 @@ struct StoryEditorView: View {
 //
 //        try? moc.save()
 //        dismiss()
-   }
+    }
 }

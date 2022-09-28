@@ -23,16 +23,21 @@ struct EditorToolbar: ToolbarContent {
                 
                 Menu {
                     Button {
+                        showingPromptEditorScreen.toggle()
+                    } label: {
+                        Label("Export", systemImage: "arrow.up.doc")
+                    }
+                    
+                    Button {
                         showingShareView.toggle()
                     } label: {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                     
                     Button {
-                            showingPromptEditorScreen.toggle()
+                        showingPromptEditorScreen.toggle()
                     } label: {
-                        Text("Prompt Settings")
-                        Image(systemName: "doc.badge.gearshape")
+                        Label("Prompt Editor", systemImage: "doc.badge.gearshape")
                     }
                 } label: {
                      Image(systemName: "ellipsis.circle")

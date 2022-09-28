@@ -14,7 +14,7 @@ struct PromptEditorView: View {
     
     @EnvironmentObject var textGeneration: GenTextViewModel
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.dismiss) var dismissEditPrompt
+    @Environment(\.dismiss) var dismissPromptEdit
     //    @Binding var hadLaunched: Bool
     
     @FocusState private var isInputActive: Bool
@@ -29,7 +29,7 @@ struct PromptEditorView: View {
     @State private var alertUser: Bool = false
     @State private var message: String = ""
     
-    @State private var theme: String = ""
+    @Binding var theme: String // = ""
     @State private var showingStoryEditorScreen = false
     
     @State private var title = ""
@@ -37,16 +37,16 @@ struct PromptEditorView: View {
     @State private var review = ""
     
     let themePlaceholder: String = "Type the theme here or pick one ⬇️."
-    let premisePlaceholder: String = "Type the premise here"
+    let premisePlaceholder: String = "Type the premise here..."
     let textLimit = 350
-    let detector = PassthroughSubject<Void, Never>()
-    let publisher: AnyPublisher<Void, Never>
+//    let detector = PassthroughSubject<Void, Never>()
+//    let publisher: AnyPublisher<Void, Never>
     
-    init() {
-        publisher = detector
-            .debounce(for: .seconds(3), scheduler: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
+//    init() {
+//        publisher = detector
+//            .debounce(for: .seconds(3), scheduler: DispatchQueue.main)
+//            .eraseToAnyPublisher()
+//    }
     
 //    let banner = """
 //              __,
@@ -97,8 +97,8 @@ struct PromptEditorView: View {
                         .foregroundColor(.primary)
                         .font(.custom("Futura", size: 15))
                         .onReceive(Just(textGeneration.primary.text)) { _ in limitText(textLimit) }
-                        .onChange(of: textGeneration.primary.text) { _ in detector.send() }
-                        .onReceive(publisher) { save() }
+//                        .onChange(of: textGeneration.primary.text) { _ in detector.send() }
+//                        .onReceive(publisher) { save() }
                     
                     GenrePickerView(genreChoices: $textGeneration.setGenre)
                         .padding(.trailing)
@@ -129,24 +129,25 @@ struct PromptEditorView: View {
                             
                             Button {
                                // TODO: need to make sure this is added once, maybe use boolean
-                                let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
-                                textGeneration.getTextResponse(moderated: false, sessionStory: text)
-                                showingStoryEditorScreen.toggle()
+                                dismissPromptEdit()
+//                                let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
+//                                textGeneration.getTextResponse(moderated: false, sessionStory: text)
+//                                showingStoryEditorScreen.toggle()
 //                                UserDefaults.standard.setValue(true, forKey: "hadLaunched")
                             } label: {
                                 Image(systemName: "arrow.up.circle.fill")
                             }
                             .buttonStyle(SendButton())
                             
-//                            NavigationLink(destination: StoryEditorView(), isActive: $showingStoryEditorScreen) { }
+//                            NavigationLink(destination: StoryEditorView(), isActive: $showingStoryEditorScreen) { EmptyView() }
                         }
                     }
                 }
             }
             // next screen of adding a book review is shown when showingAddScreen is true
-            .fullScreenCover(isPresented: $showingStoryEditorScreen) {
-                StoryEditorView()
-            }
+//            .fullScreenCover(isPresented: $showingStoryEditorScreen) {
+//                StoryEditorView()
+//            }
             .alert(title, isPresented: $alertUser, presenting: message) {_ in
                 Button("OK") {}
             }
@@ -156,9 +157,10 @@ struct PromptEditorView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if isInputActive {
                         Button {
-                            let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
-                            textGeneration.getTextResponse(moderated: false, sessionStory: text)
-                            showingStoryEditorScreen.toggle()
+                            dismissPromptEdit()
+//                            let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
+//                            textGeneration.getTextResponse(moderated: false, sessionStory: text)
+//                            showingStoryEditorScreen.toggle()
                         } label: {
                             Image(systemName: "arrow.up.circle.fill")
                         }
@@ -166,7 +168,7 @@ struct PromptEditorView: View {
                         .padding()
                     } else {
                         Button("Cancel") {
-                            dismissEditPrompt()
+                            dismissPromptEdit()
                         }
                         .buttonStyle(.plain)
                     }

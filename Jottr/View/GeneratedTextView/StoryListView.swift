@@ -12,10 +12,10 @@ struct StoryListView: View {
     
     @EnvironmentObject var textGeneration: GenTextViewModel
     @State private var isShareViewPresented: Bool = false
-    @State private var isShowingAccountScreen = false
     @State private var isShowingLoginScreen = false
     @State private var isShowingPromptEditorScreen = false
-    @State private var isShowingSearchScreen = false
+    @State private var isShowingFeedbackScreen = false
+    @State private var isShowingSettingsScreen = false
     @State private var isActive: Bool = false
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
@@ -75,11 +75,11 @@ struct StoryListView: View {
         .transition(.opacity)
         .navigationTitle("Collection")
         .toolbar {
-            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
         }
-        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+//        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
-        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+//        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
     }
     
     func deleteStory(at offsets: IndexSet) {

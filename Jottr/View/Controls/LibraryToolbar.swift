@@ -12,7 +12,8 @@ struct LibraryToolbar: ToolbarContent {
     
     @Binding var showingPromptEditorScreen: Bool
     @Binding var showingLoginScreen: Bool
-    @Binding var showingSearchScreen: Bool
+    @Binding var showingFeedbackScreen: Bool
+    @Binding var showingSettingsScreen: Bool
     
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -28,7 +29,7 @@ struct LibraryToolbar: ToolbarContent {
                 }
                 
                 Button {
-                    showingLoginScreen.toggle()
+                    showingFeedbackScreen.toggle()
                 } label: {
                     Label("Feedback", systemImage: "pencil.and.outline")
                 }

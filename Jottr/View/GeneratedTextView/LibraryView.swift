@@ -13,11 +13,12 @@ struct LibraryView: View {
     @EnvironmentObject var textGeneration: GenTextViewModel
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
-    @State private var isShowingAccountScreen = false
-    @State private var isShowingLoginScreen = false
     @State private var isShowingPromptEditorScreen = false
+    @State private var isShowingLoginScreen = false
+    @State private var isShowingFeedbackScreen = false
     @State private var isShowingSearchScreen = false
     @State private var isShowingStoryListView = false
+    @State private var isShowingSettingsScreen: Bool = false
     
     @State private var isHidden: Bool = false
    
@@ -115,7 +116,7 @@ struct LibraryView: View {
         .transition(.opacity)
         .navigationTitle("🖋Jottr") //highlighter
         .toolbar {
-            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingSearchScreen: $isShowingSearchScreen)
+            LibraryToolbar(showingPromptEditorScreen: $isShowingPromptEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
         }
 //        .onChange(of: inputImage) { _ in loadImage() }
         .safeAreaInset(edge: .bottom, alignment: .trailing) {
@@ -136,7 +137,7 @@ struct LibraryView: View {
                 .accessibilityLabel("Show Search")
             }
         }
-        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
+//        .sheet(isPresented: $isShowingPromptEditorScreen) { PromptEditorView() }
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
         .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
 //        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $inputImage) }
