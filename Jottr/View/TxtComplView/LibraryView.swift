@@ -10,23 +10,19 @@ import SwiftUI
 struct LibraryView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: GenTextViewModel
+    @EnvironmentObject var txtComplVM: TxtComplViewModel
     // have form dismiss itself
     @Environment(\.dismiss) var dismiss
     
-    @State private var isShowingStoryEditorScreen = false
+    @State var isShowingStoryEditorScreen = false
     @State private var isShowingLoginScreen = false
     @State private var isShowingFeedbackScreen = false
     @State private var isShowingSearchScreen = false
     @State private var isShowingStoryListView = false
     @State private var isShowingSettingsScreen: Bool = false
-    
     @State private var isStoryListActive: Bool = false
     
     @State private var isHidden: Bool = false
-   
-    @State private var genre = ""
-    @State private var review = ""
     
 //    @State private var image: Image = Image("noImagePlaceholder")
 //    @State private var inputImage: UIImage?

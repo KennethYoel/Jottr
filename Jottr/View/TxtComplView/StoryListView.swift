@@ -10,7 +10,11 @@ import SwiftUI
 struct StoryListView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: GenTextViewModel
+    @EnvironmentObject var txtComplVM: TxtComplViewModel
+    // holds our Core Data managed object context (so we can delete or save stuff)
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var stories: FetchedResults<Story>
+    
     @State private var isShareViewPresented: Bool = false
     @State private var isShowingLoginScreen = false
     @State private var isShowingStoryEditorScreen = false
@@ -35,21 +39,20 @@ struct StoryListView: View {
                  automatically, but things are trickier when it comes to creating
                  views inside the ForEach.
                  */
-                ForEach(textGeneration.sessionPrompt) { story in
+                ForEach(stories) { story in
                     /*
                      All the properties of our Core Data entity are optional, which
                      means we need to make heavy use of nil coalescing in order to
                      make our code work.
                      */
                     NavigationLink {
-                        GenTextDetailView() //currentView: $currentView.animation(.easeInOut)
-//                        Text(book.title ?? "Unknown Title")
+                        ListDetailView(story: story)
                     } label: {
                         VStack(alignment: .leading) {
-                            Text("Title of the Story") // story.title
+                            Text(story.wrappedTitle)
                                 .font(.system(.headline, design: .serif))
                             
-                            Text(story.text) //?? "Unknown Story"
+                            Text(story.wrappedSessionStory)
                                 .foregroundColor(.secondary)
                                 .font(.system(.subheadline, design: .serif))
                                 // limit the amount of text shown in each item in the list
@@ -57,7 +60,7 @@ struct StoryListView: View {
                             
                             HStack {
                                 Label("Char(s)", systemImage: "text.alignleft")
-                                Text("\(dueDate, formatter: Self.taskDateFormat)") // Date of Creation
+                                Text(String(describing: story.creationDate!)) // dueDate, formatter: Self.taskDateFormat
                                     .font(.system(.caption, design: .serif))
                             }
                         }
@@ -87,16 +90,16 @@ struct StoryListView: View {
     }
     
     func deleteStory(at offsets: IndexSet) {
-//        for offset in offsets {
-//            let book = books[offset]
-//            // delete from in memory storage
-//            moc.delete(book)
-//        }
-//        // write the changes out to persistent storage
-//        do {
-//            try moc.save()
-//        } catch {
-//            print(error.localizedDescription)
-//        }
+        for offset in offsets {
+            let story = stories[offset]
+            // delete from in memory storage
+            moc.delete(story)
+        }
+        // write the changes out to persistent storage
+        do {
+            try moc.save()
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 }

@@ -22,9 +22,6 @@ struct LibraryToolbar: ToolbarContent {
             } label: {
                 Label("New Story", systemImage: "square.and.pencil")
             }
-//            NavigationLink(destination: StoryEditorView()) {
-//                Label("New Story", systemImage: "square.and.pencil")
-//            }
             
             Menu {
                 Button {

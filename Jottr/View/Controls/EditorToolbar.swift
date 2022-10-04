@@ -10,6 +10,7 @@ import SwiftUI
 
 struct EditorToolbar: ToolbarContent {
     
+//    @Binding var newStoryEditorScreen: Bool
     @Binding var showingShareView: Bool
     @Binding var showingPromptEditorScreen: Bool
     @FocusState var showingKeyboard: Bool
@@ -17,9 +18,11 @@ struct EditorToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             if !showingKeyboard {
-                NavigationLink(destination: StoryEditorView()) {
-                    Label("New Story", systemImage: "square.and.pencil")
-                }
+//                Button {
+//                    newStoryEditorScreen.toggle()
+//                } label: {
+//                    Label("New Story", systemImage: "square.and.pencil")
+//                }
                 
                 Menu {
                     Button {

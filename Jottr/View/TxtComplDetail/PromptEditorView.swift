@@ -12,7 +12,7 @@ import SwiftUI
 struct PromptEditorView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: GenTextViewModel
+    @EnvironmentObject var txtComplVM: TxtComplViewModel
     @Environment(\.managedObjectContext) var moc
     @Environment(\.dismiss) var dismissPromptEdit
     //    @Binding var hadLaunched: Bool
@@ -31,10 +31,6 @@ struct PromptEditorView: View {
     
     @Binding var theme: String // = ""
     @State private var showingStoryEditorScreen = false
-    
-    @State private var title = ""
-    @State private var genre = ""
-    @State private var review = ""
     
     let themePlaceholder: String = "Type the theme here or pick one ⬇️."
     let premisePlaceholder: String = "Type the premise here..."
@@ -67,7 +63,7 @@ struct PromptEditorView: View {
                         .font(.custom("Futura", size: 15)) // use either Futura, Caslon, or Johnston-the London underground typeface
                         .onReceive(Just(theme)) { _ in limitText(textLimit) }
                     
-                    ThemePickerView(themeChoices: $textGeneration.setTheme)
+                    ThemePickerView(themeChoices: $txtComplVM.setTheme)
                             .padding(.trailing)
                 } header: {
                     HStack {
@@ -92,15 +88,15 @@ struct PromptEditorView: View {
                 .listRowSeparator(.hidden)
                 
                 Section {
-                    TextEditorView(title: $title, text: $textGeneration.primary.text, placeholder: premisePlaceholder)
+                    TextEditorView(title: $txtComplVM.title, text: $txtComplVM.primary.text, placeholder: premisePlaceholder)
                         .focused($isInputActive)
                         .foregroundColor(.primary)
                         .font(.custom("Futura", size: 15))
-                        .onReceive(Just(textGeneration.primary.text)) { _ in limitText(textLimit) }
-//                        .onChange(of: textGeneration.primary.text) { _ in detector.send() }
+                        .onReceive(Just(txtComplVM.primary.text)) { _ in limitText(textLimit) }
+//                        .onChange(of: txtComplVM.primary.text) { _ in detector.send() }
 //                        .onReceive(publisher) { save() }
                     
-                    GenrePickerView(genreChoices: $textGeneration.setGenre)
+                    GenrePickerView(genreChoices: $txtComplVM.setGenre)
                         .padding(.trailing)
                 } header: {
                     HStack {
@@ -142,9 +138,9 @@ struct PromptEditorView: View {
 //                    }
 //                }
             }
-            .alert(title, isPresented: $alertUser, presenting: message) {_ in
-                Button("OK") {}
-            }
+//            .alert(title, isPresented: $alertUser, presenting: message) {_ in
+//                Button("OK") {}
+//            }
             .transition(.opacity)
             .navigationTitle("Prompt Editor")
             .toolbar {
@@ -192,9 +188,9 @@ struct PromptEditorView: View {
     
     //    // function to keep text length in limits
     private func limitText(_ upper: Int) {
-        if theme.count & textGeneration.primary.text.count > upper {
+        if theme.count & txtComplVM.primary.text.count > upper {
             theme = String(theme.prefix(upper))
-            textGeneration.sessionPrompt[0].text = String(textGeneration.primary.text.prefix(upper))
+            txtComplVM.sessionPrompt[0].text = String(txtComplVM.primary.text.prefix(upper))
         }
     }
 }

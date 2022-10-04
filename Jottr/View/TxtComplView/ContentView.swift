@@ -14,7 +14,6 @@ enum LoadingState {
 struct ContentView: View {
     // MARK: Properties
     
-    @EnvironmentObject var textGeneration: GenTextViewModel
     var currentView = LoadingState.library
     
     // MARK: View
@@ -44,7 +43,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ContentView()
-                .environmentObject(GenTextViewModel())
+                .environmentObject(TxtComplViewModel())
         }
         .previewInterfaceOrientation(.portrait)
     }

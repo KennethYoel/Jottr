@@ -7,9 +7,17 @@
 
 import Foundation
 
-class GenTextViewModel: ObservableObject {
-    @Published var sessionPrompt = [SessionPrompt]()
+class TxtComplViewModel: ObservableObject {
+    enum LoadingAPIState {
+        case loading
+        case loaded
+        case failed(Error)
+    }
+    
+    @Published private(set) var loadingAPIState = LoadingAPIState.loaded
+    
     @Published var title: String = ""
+    @Published var sessionPrompt = [SessionPrompt]()
     @Published var sessionStory: String = ""
     @Published var setTheme: CommonTheme = .custom
     @Published var setGenre: CommonGenre = .fantasy
@@ -33,6 +41,8 @@ class GenTextViewModel: ObservableObject {
     }
     
     func getTextResponse(moderated: Bool, sessionStory: String) {
+        loadingAPIState = .loading
+        
         var promptText: String = ""
         if sessionStory.isEmpty {
             promptText = self.primary.text
@@ -61,17 +71,11 @@ class GenTextViewModel: ObservableObject {
             let newText = data.choices[0].completionText
             DispatchQueue.main.async {
                 self.appendToStory(sessionStory: newText)
+                self.loadingAPIState = .loaded
             }
         case .failure(let error):
-//            print(error.localizedDescription)
-            handleFailureAlert(title: "Error", message: error.localizedDescription)
+            loadingAPIState = .failed(error)
         }
-    }
-
-    func handleFailureAlert(title: String, message: String) {
-        var showAlert = AlertView()
-        showAlert.title = title
-        showAlert.message = message
     }
     
     func promptDesign(_ mainTheme: String = "", _ storyPrompt: String) -> String {
