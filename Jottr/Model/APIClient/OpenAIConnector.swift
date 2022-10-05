@@ -95,7 +95,7 @@ class OpenAIConnector {
             let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
             debugPrint(jsonStr)
             
-            decodeJson(jsonString: jsonStr) { result in
+            decodeJson(jsonString: jsonStr, responseType: OpenAIResponse.self) { result in
                 switch result {
                 case .success(let data):
                     completionHandler(.success(data))
@@ -123,7 +123,7 @@ class OpenAIConnector {
             let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
             debugPrint(jsonStr)
             
-            decodeJson(jsonString: jsonStr) { [self] result in
+            decodeJson(jsonString: jsonStr, responseType: OpenAIResponse.self) { [self] result in
                 switch result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -173,7 +173,8 @@ class OpenAIConnector {
             let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
             debugPrint(jsonStr)
             
-            decodeModeratedJson(jsonString: jsonStr) { result in
+            // decoding OpenAI moderation response which identify content that our content policy prohibits
+            decodeJson(jsonString: jsonStr, responseType: ModerationResponse.self) { result in
                 switch result {
                 case .success(let data):
                     guard let isFlagged = data else { return }
@@ -220,30 +221,16 @@ class OpenAIConnector {
         completionHandler(.success(request))
     }
     
-    class func decodeJson(jsonString: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
+    class func decodeJson<ResponseType: Decodable>(jsonString: String, responseType: ResponseType.Type, completionHandler: @escaping (Result<ResponseType?, Error>) -> Void) {
         let json = jsonString.data(using: .utf8)!
         
         let decoder = JSONDecoder()
         do {
-            let product = try decoder.decode(OpenAIResponse.self, from: json)
+            let product = try decoder.decode(responseType.self, from: json)
             completionHandler(.success(product))
         } catch {
             completionHandler(.failure(error))
             debugPrint("Error decoding OpenAI API Response")
-        }
-    }
-    
-    // decoding OpenAI moderation response which identify content that our content policy prohibits
-    class func decodeModeratedJson(jsonString: String, completionHandler: @escaping (Result<ModerationResponse?, Error>) -> Void) {
-        let json = jsonString.data(using: .utf8)!
-        
-        let decoder = JSONDecoder()
-        do {
-            let product = try decoder.decode(ModerationResponse.self, from: json)
-            completionHandler(.success(product))
-        } catch {
-            completionHandler(.failure(error))
-            debugPrint("Error decoding OpenAI Moderation Response")
         }
     }
 }
