@@ -34,7 +34,7 @@ struct StoryEditorView: View {
     @State private var isShowingEditorToolbar: Bool = false
     @State private var showingAlert = false
     
-    @State private var stories = [SessionPrompt]()
+    @State private var stories = [SessionStory]()
     
     var body: some View {
         switch txtComplVM.loadingAPIState {
@@ -52,7 +52,7 @@ struct StoryEditorView: View {
 //                    }
 //                }
         case .loaded:
-            TextEditorView(title: $txtComplVM.title, text: $txtComplVM.sessionStory, placeholder: storyEditorPlaceholder)
+            TextEditorView(title: $txtComplVM.title, text: $txtComplVM.primary.text, placeholder: storyEditorPlaceholder)
                     .focused($isInputActive)
                     .padding([.leading, .top, .trailing,])
                     .transition(.opacity)
@@ -94,7 +94,7 @@ struct StoryEditorView: View {
                                     .padding()
                                 
                                 Button {
-                                    txtComplVM.getTextResponse(moderated: false, sessionStory: txtComplVM.sessionStory)
+                                    txtComplVM.getTextResponse(moderated: false, sessionStory: txtComplVM.primary.text)
                                 } label: {
                                     Image(systemName: "arrow.up.circle.fill") //chevron.compact.down
                                 }
@@ -131,7 +131,7 @@ struct StoryEditorView: View {
                           primaryButton: .default(
                             Text("Try Again"),
                             action: {
-                                txtComplVM.getTextResponse(moderated: false, sessionStory: txtComplVM.sessionStory)
+                                txtComplVM.getTextResponse(moderated: false, sessionStory: txtComplVM.primary.text)
                             }
                           ),
                           secondaryButton: .cancel(
@@ -162,8 +162,8 @@ struct StoryEditorView: View {
         newStory.creationDate = Date()
         newStory.genre = txtComplVM.setGenre.id
         newStory.title = txtComplVM.title
-        newStory.sessionPrompt = txtComplVM.primary.text
-        newStory.sessionStory = txtComplVM.sessionStory
+        newStory.sessionPrompt = txtComplVM.sessionPrompt
+        newStory.sessionStory = txtComplVM.primary.text
         
         if txtComplVM.setTheme.id == "Custom" {
             newStory.theme = theme

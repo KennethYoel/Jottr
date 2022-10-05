@@ -114,8 +114,8 @@ struct ListDetailView: View {
                 print(error.localizedDescription)
             }
         }
-        
-        self.viewModel.sessionStory = txtComplVM.sessionStory
+        // cant update this view :(
+        self.viewModel.sessionStory = txtComplVM.primary.text
         
 //        dismissDetailView()
     }

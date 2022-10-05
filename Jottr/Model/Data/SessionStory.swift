@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SessionPrompt: Decodable, Identifiable, Hashable {
+struct SessionStory: Decodable, Identifiable, Hashable {
     var id = UUID()
     var text: String
 }

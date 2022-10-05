@@ -6,8 +6,13 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 class OpenAIConnector {
+    // MARK: OpenAI API URL's
+    
     /*
      OpenAI has four models,
      daVinci, which is the most powerful (and most expensive) model,
@@ -20,10 +25,13 @@ class OpenAIConnector {
      Babbage: https://api.openai.com/v1/engines/text-babbage-001/completions
      Ada: https://api.openai.com/v1/engines/text-ada-001/completions
      */
+    
     static let openAIURL = URL(string: "https://api.openai.com/v1/engines/text-davinci-002/completions")
     
     // moderation endpoint
     static let openAIModeration = URL(string: "https://api.openai.com/v1/moderations")
+    
+    // MARK: Authentication Properties
     
     static var openAIKey: String {
       get {
@@ -40,21 +48,7 @@ class OpenAIConnector {
       }
     }
     
-    class func fetchGETRequest<ResponseType: Decodable>(urlString: String, responseType: ResponseType.Type) async -> String {
-        let fetchTask = Task { () -> String in
-            let url = URL(string: urlString)! //"https://hws.dev/readings.json"
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let readings = try JSONDecoder().decode(responseType.self, from: data)
-            return readings as! String //"Found \(readings.count) readings"
-        }
-        let result = await fetchTask.result
-        switch result {
-            case .success(let str):
-                return str
-            case .failure(let error):
-                return "Error: \(error.localizedDescription)"
-        }
-    }
+    // MARK: Helper Methods for API Requests
     
     class func executeRequest(request: URLRequest, withSessionConfig sessionConfig: URLSessionConfiguration?) -> Data? {
         let semaphore = DispatchSemaphore(value: 0)
@@ -84,17 +78,125 @@ class OpenAIConnector {
         print("Done waiting, obtained - \(retVal)")
         return requestData
     }
-    /*
-     Just call the function OpenAIConnector.processPrompt(prompt: “Insert the prompt here”) and you’ll be
-     good to go!
-     */
+    
     class func processPrompt(prompt: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
+        var urlRequest: URLRequest!
+        
+        resolveURL(sessionPrompt: prompt) { result in
+            switch result {
+            case .success(let urlData):
+                urlRequest = urlData
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+        
+        if let requestData = executeRequest(request: urlRequest, withSessionConfig: nil) {
+            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+            debugPrint(jsonStr)
+            
+            decodeJson(jsonString: jsonStr) { result in
+                switch result {
+                case .success(let data):
+                    completionHandler(.success(data))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
+        }
+    }
+    
+    // before returning text checks first if content is not prohibited
+    class func processModeratePrompt(prompt: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
+        var urlRequest: URLRequest!
+        
+        resolveURL(sessionPrompt: prompt) { result in
+            switch result {
+            case .success(let urlData):
+                urlRequest = urlData
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+        
+        if let requestData = executeRequest(request: urlRequest, withSessionConfig: nil) {
+            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+            debugPrint(jsonStr)
+            
+            decodeJson(jsonString: jsonStr) { [self] result in
+                switch result {
+                case .success(let data):
+                    guard let data = data else { return }
+                    requestModeration(textToClassify: data.choices[0].completionText) { result in
+                        switch result {
+                        case .success(let flag):
+                            var textOutput: OpenAIResponse!
+                            // if OpenAI finds the text to be appropriate then return text else don't show it
+                            if flag == false {
+                                textOutput = data
+                            } else {
+                                // need to add a method to show a text stating prohibited content.
+                                debugPrint("Unable to show prohibited content: \(data)")
+                            }
+                            completionHandler(.success(textOutput))
+                        case .failure(let error):
+                            debugPrint("\(error.localizedDescription)")
+                        }
+                    }
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
+        }
+    }
+    
+    // The moderation endpoint can be used to detect whether text generated by the API violates OpenAI's content policy.
+    class func requestModeration(textToClassify: String, completionHandler: @escaping (Result<Bool, Error>) -> Void){
+        var request = URLRequest(url: self.openAIModeration!)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
+        let httpBody: [String: Any] = [
+            "input" : textToClassify
+        ]
+        
+        var httpBodyJson: Data!
+        
+        do {
+            httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
+        } catch {
+            debugPrint("Unable to convert to JSON \(error)")
+        }
+        request.httpBody = httpBodyJson
+        
+        if let requestData = executeRequest(request: request, withSessionConfig: nil) {
+            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+            debugPrint(jsonStr)
+            
+            decodeModeratedJson(jsonString: jsonStr) { result in
+                switch result {
+                case .success(let data):
+                    guard let isFlagged = data else { return }
+                    if isFlagged.results[0].flagged {
+                        let moderatedCategories = isFlagged.results[0].categories
+                        // prints to console which category the content violated
+                        print("The prohibited categories: \(String(describing: moderatedCategories))")
+                    }
+                    completionHandler(.success(isFlagged.results[0].flagged))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
+        }
+    }
+    
+    class func resolveURL(sessionPrompt: String, completionHandler: @escaping (Result<URLRequest?, Error>) -> Void) {
         var request = URLRequest(url: self.openAIURL!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
         let httpBody: [String: Any] = [
-            "prompt": prompt,
+            "prompt": sessionPrompt,
             "max_tokens": 100,
             "temperature": 0.6, // float from 0 to 1, generally recommend altering this or top_p but not both.
             "top_p": 1.0, // An alternative to sampling with temperature, called nucleus sampling.
@@ -110,118 +212,12 @@ class OpenAIConnector {
         do {
             httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
         } catch {
+            completionHandler(.failure(error))
             debugPrint("Unable to convert to JSON \(error)")
-            DispatchQueue.main.async {
-                completionHandler(.failure(error))
-            }
-        }
-        request.httpBody = httpBodyJson
-        if let requestData = executeRequest(request: request, withSessionConfig: nil) {
-            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
-            print(jsonStr)
-            
-            decodeJson(jsonString: jsonStr) { result in
-                switch result {
-                case .success(let data):
-                    completionHandler(.success(data))
-                case .failure(let error):
-                    completionHandler(.failure(error))
-                }
-            }
-        }
-    }
-    
-    // before returning text checks first if content is not prohibited
-    class func processModeratePrompt(prompt: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
-        var request = URLRequest(url: self.openAIURL!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
-        let httpBody: [String: Any] = [
-            "prompt" : prompt,
-            "max_tokens" : 100,
-            "temperature": 0.6, //String(temperature) a float from 0 to 1
-            "echo": false
-        ]
-        
-        var httpBodyJson: Data!
-        
-        do {
-            httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
-        } catch {
-            debugPrint("Unable to convert to JSON \(error.localizedDescription)")
-            DispatchQueue.main.async {
-                completionHandler(.failure(error))
-            }
         }
         request.httpBody = httpBodyJson
         
-        if let requestData = executeRequest(request: request, withSessionConfig: nil) {
-            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
-            print(jsonStr)
-            
-            decodeJson(jsonString: jsonStr) { [self] result in
-                switch result {
-                case .success(let data):
-                    // TODO: change Optional Bool to non-optional
-                    let moderationResponse = requestModeration(textToClassify: (data?.choices[0].completionText)!)
-                    var textOutput: OpenAIResponse!//String = ""
-                    // if OpenAI finds the text to be appropriate then return text else don't show it
-                    if moderationResponse == false {
-                        if let moderatedData = data { //?.choices[0].text
-                            textOutput = moderatedData
-                        }
-                    } else {
-                        // need to add a method to show a text stating prohibited content.
-                        debugPrint("Unable to show prohibited content.")
-                    }
-                    completionHandler(.success(textOutput))
-                case .failure(let error):
-                    completionHandler(.failure(error))
-                }
-            }
-        }
-    }
-    
-    // The moderation endpoint can be used to detect whether text generated by the API violates OpenAI's content policy.
-    class func requestModeration(textToClassify: String) -> Optional<Bool> {
-        var request = URLRequest(url: self.openAIModeration!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
-        let httpBody: [String: Any] = [
-            "input" : textToClassify
-        ]
-        
-        var httpBodyJson: Data
-        
-        do {
-            httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
-        } catch {
-            print("Unable to convert to JSON \(error)")
-            return nil
-        }
-        request.httpBody = httpBodyJson
-        if let requestData = executeRequest(request: request, withSessionConfig: nil) {
-            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
-            print(jsonStr)
-            
-            let moderationResponseHandler = ModerationResponseHandler()
-            guard let isFlagged = moderationResponseHandler.decodeJson(jsonString: jsonStr)?.results[0].flagged else {
-                return nil
-            }
-            
-            if isFlagged {
-                let moderatedCategories = moderationResponseHandler.decodeJson(jsonString: jsonStr)?.results[0].categories
-                // prints to console which category the content violated
-                print("The prohibited categories: \(String(describing: moderatedCategories))")
-            }
-            
-            return isFlagged
-            
-        }
-        
-        return nil
+        completionHandler(.success(request))
     }
     
     class func decodeJson(jsonString: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
@@ -232,148 +228,22 @@ class OpenAIConnector {
             let product = try decoder.decode(OpenAIResponse.self, from: json)
             completionHandler(.success(product))
         } catch {
-            debugPrint("Error decoding OpenAI API Response")
             completionHandler(.failure(error))
+            debugPrint("Error decoding OpenAI API Response")
         }
     }
-}
-
-
-//struct OpenAIResponseHandler {
-//    func decodeJson(jsonString: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
-//        let json = jsonString.data(using: .utf8)!
-//
-//        let decoder = JSONDecoder()
-//        do {
-//            let product = try decoder.decode(OpenAIResponse.self, from: json)
-//            DispatchQueue.main.async {
-//                completionHandler(.success(product))
-//            }
-//        } catch {
-//            debugPrint("Error decoding OpenAI API Response")
-//            DispatchQueue.main.async {
-//                completionHandler(.failure(error))
-//            }
-//        }
-//    }
-//}
-// decoding OpenAI moderation response which identify content that our content policy prohibits
-struct ModerationResponseHandler {
-    func decodeJson(jsonString: String) -> ModerationResponse? {
+    
+    // decoding OpenAI moderation response which identify content that our content policy prohibits
+    class func decodeModeratedJson(jsonString: String, completionHandler: @escaping (Result<ModerationResponse?, Error>) -> Void) {
         let json = jsonString.data(using: .utf8)!
         
         let decoder = JSONDecoder()
         do {
             let product = try decoder.decode(ModerationResponse.self, from: json)
-            return product
-            
+            completionHandler(.success(product))
         } catch {
-            print("Error decoding OpenAI Moderation Response")
+            completionHandler(.failure(error))
+            debugPrint("Error decoding OpenAI Moderation Response")
         }
-        
-        return nil
     }
 }
-
-//struct OpenAIResponse: Codable {
-//    var id: String
-//    var object: String
-//    var created: Int
-//    var model: String
-//    var choices: [Choice]
-//}
-//
-//struct Choice: Codable {
-//    var text: String
-//    var index: Int
-//    var logprobs: String?
-//    var finish_reason: String
-//}
-
-
-//struct ModerationResponse: Codable {
-//    var id: String
-//    var model: String
-//    var results: [Results]
-//}
-//
-//struct Results: Codable {
-//    struct Categories: Codable {
-//        var hate: Bool
-//        var hateThreatening: Bool
-//        var selfHarm: Bool
-//        var sexual: Bool
-//        var sexualMinors: Bool
-//        var violence: Bool
-//        var violenceGraphic: Bool
-//        
-//        enum CodingKeys: String, CodingKey {
-//            case hate
-//            case hateThreatening = "hate/threatening"
-//            case selfHarm = "self-harm"
-//            case sexual
-//            case sexualMinors = "sexual/minors"
-//            case violence
-//            case violenceGraphic = "violence/graphic"
-//        }
-//    }
-//    struct CategoryScores: Codable {
-//        var hate: Double
-//        var hateThreatening: Double
-//        var selfHarm: Double
-//        var sexual: Double
-//        var sexualMinors: Double
-//        var violence: Double
-//        var violenceGraphic: Double
-//        
-//        enum CodingKeys: String, CodingKey {
-//            case hate
-//            case hateThreatening = "hate/threatening"
-//            case selfHarm = "self-harm"
-//            case sexual
-//            case sexualMinors = "sexual/minors"
-//            case violence
-//            case violenceGraphic = "violence/graphic"
-//        }
-//    }
-//    
-//    var categories: Categories
-//    var categoryScores: CategoryScores
-//    var flagged: Bool
-//    
-//    enum CodingKeys: String, CodingKey {
-//        case categories
-//        case categoryScores = "category_scores"
-//        case flagged
-//    }
-//}
-
-/*
- {
-   "id": "modr-XXXXX",
-   "model": "text-moderation-001",
-   "results": [
-     {
-       "categories": {
-         "hate": 0, <- this is a Bool
-         "hate/threatening": 0, <- this is a Bool
-         "self-harm": 0, <- this is a Bool
-         "sexual": 0, <- this is a Bool
-         "sexual/minors": 0, <- this is a Bool
-         "violence": 0, <- this is a Bool
-         "violence/graphic": 0 <- this is a Bool
-       },
-       "category_scores": {
-         "hate": 0.18805529177188873,
-         "hate/threatening": 0.0001250059431185946,
-         "self-harm": 0.0003706029092427343,
-         "sexual": 0.0008735615410842001,
-         "sexual/minors": 0.0007470346172340214,
-         "violence": 0.0041268812492489815,
-         "violence/graphic": 0.00023186142789199948
-       },
-       "flagged": 0 <- this is a Bool
-     }
-   ]
- }
- */

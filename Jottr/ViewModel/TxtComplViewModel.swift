@@ -17,20 +17,20 @@ class TxtComplViewModel: ObservableObject {
     @Published private(set) var loadingAPIState = LoadingAPIState.loaded
     
     @Published var title: String = ""
-    @Published var sessionPrompt = [SessionPrompt]()
-    @Published var sessionStory: String = ""
+    @Published var sessionPrompt: String = ""
+    @Published var sessionStory = [SessionStory]()
     @Published var setTheme: CommonTheme = .custom
     @Published var setGenre: CommonGenre = .fantasy
     
-    var primary: SessionPrompt {
+    var primary: SessionStory {
         get {
-            if sessionPrompt.isEmpty {
-                return SessionPrompt.init(id: UUID(), text: "")
+            if sessionStory.isEmpty {
+                return SessionStory.init(id: UUID(), text: "")
             }
-            return sessionPrompt[0]
+            return sessionStory[0]
         }
-        set(newPrompt) {
-            sessionPrompt = [newPrompt]
+        set(newStory) {
+            sessionStory = [newStory]
         }
         
         // unwrap a optional array, if array doesn't have a 0th index then init an empty text
@@ -40,7 +40,7 @@ class TxtComplViewModel: ObservableObject {
 //        return unwrappedText
     }
     
-    func getTextResponse(moderated: Bool, sessionStory: String) {
+    func getTextResponse(moderated: Bool = true, sessionStory: String) {
         loadingAPIState = .loading
         
         var promptText: String = ""
@@ -99,9 +99,9 @@ class TxtComplViewModel: ObservableObject {
     func appendToStory(sessionStory: String) {
         if self.sessionStory.isEmpty {
             // concatenate the next part of the generated story onto the existing story
-            self.sessionStory += primary.text + sessionStory
+            self.primary.text += sessionPrompt + sessionStory
         } else {
-            self.sessionStory += sessionStory
+            self.primary.text += sessionStory
         }
     }
 }

@@ -23,7 +23,7 @@
 		572B12ED28A4288000227AB4 /* openairesponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 572B12EC28A4287F00227AB4 /* openairesponse.json */; };
 		5744A7E628DD9EE20058E879 /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5744A7E528DD9EE20058E879 /* GenrePickerView.swift */; };
 		5745669228D3A5840002DB98 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5745669128D3A5840002DB98 /* SearchView.swift */; };
-		5749D76328C7507900AC3C2B /* SessionPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76228C7507900AC3C2B /* SessionPrompt.swift */; };
+		5749D76328C7507900AC3C2B /* SessionStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76228C7507900AC3C2B /* SessionStory.swift */; };
 		5749D76728C78ED700AC3C2B /* StoryEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76628C78ED700AC3C2B /* StoryEditorView.swift */; };
 		574B4D5928A6552700FC47D8 /* OpenAIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */; };
 		5752803C28D0CF7E00CD8A9F /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5752803B28D0CF7E00CD8A9F /* AlertView.swift */; };
@@ -70,7 +70,7 @@
 		572B12EC28A4287F00227AB4 /* openairesponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = openairesponse.json; sourceTree = "<group>"; };
 		5744A7E528DD9EE20058E879 /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
 		5745669128D3A5840002DB98 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
-		5749D76228C7507900AC3C2B /* SessionPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPrompt.swift; sourceTree = "<group>"; };
+		5749D76228C7507900AC3C2B /* SessionStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStory.swift; sourceTree = "<group>"; };
 		5749D76628C78ED700AC3C2B /* StoryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryEditorView.swift; sourceTree = "<group>"; };
 		574B4D5828A6552700FC47D8 /* OpenAIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIRequest.swift; sourceTree = "<group>"; };
 		5752803B28D0CF7E00CD8A9F /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
@@ -220,7 +220,7 @@
 				572B12E128A3C40600227AB4 /* Jottr.xcdatamodeld */,
 				57AE974F28D878E100A75B3A /* PersistenceController.swift */,
 				572B12D928A3C14A00227AB4 /* ManagedObjectExtensions */,
-				5749D76228C7507900AC3C2B /* SessionPrompt.swift */,
+				5749D76228C7507900AC3C2B /* SessionStory.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -397,7 +397,7 @@
 				5779136F28A51E4F00EF0E9B /* LoginView.swift in Sources */,
 				572B12E528A3C50B00227AB4 /* OpenAIConnector.swift in Sources */,
 				57006B6928E211D500CEDC9D /* RootPresentationMode.swift in Sources */,
-				5749D76328C7507900AC3C2B /* SessionPrompt.swift in Sources */,
+				5749D76328C7507900AC3C2B /* SessionStory.swift in Sources */,
 				5729771128CF358800E465EF /* StoryListView.swift in Sources */,
 				5749D76728C78ED700AC3C2B /* StoryEditorView.swift in Sources */,
 				571FBF2F28EACAED00D47037 /* Story+CoreDataClass.swift in Sources */,

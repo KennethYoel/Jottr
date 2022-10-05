@@ -190,7 +190,7 @@ struct PromptEditorView: View {
     private func limitText(_ upper: Int) {
         if theme.count & txtComplVM.primary.text.count > upper {
             theme = String(theme.prefix(upper))
-            txtComplVM.sessionPrompt[0].text = String(txtComplVM.primary.text.prefix(upper))
+            txtComplVM.sessionStory[0].text = String(txtComplVM.sessionPrompt.prefix(upper))
         }
     }
 }
