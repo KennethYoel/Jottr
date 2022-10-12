@@ -9,6 +9,4 @@ import CoreData
 import Foundation
 
 @objc(Story)
-public class Story: NSManagedObject {
-
-}
+public class Story: NSManagedObject { }

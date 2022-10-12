@@ -11,20 +11,19 @@ import SwiftUI
 struct JottrApp: App {
     // MARK: Properties
     
+    // when the app moves to the background, we call the save() method so that Core Data saves your changes permanently
+    @Environment(\.scenePhase) var scenePhase
+    // create an instance of NetworkMonitor then inject it into the SwiftUI environment
+    let monitor = NetworkMonitor()
     // a property to store the persistence data controller
     @StateObject private var persistenceController = PersistenceController()
-    
-    // create text generator object
+    // create an instance of TxtComplViewModel then inject it into the SwiftUI environment
     @StateObject var txtComplVM = TxtComplViewModel()
-    // @AppStorage stores user defaults similarly as using userDefaults.standard
-    @AppStorage("hadLauncehd") private var hadLaunched = false //UserDefaults.standard.bool(forKey: "hadLaunched")
-    // when the app moves to the background, we call the save() method so that Core Data saves your changes permanently
-    
-    @Environment(\.scenePhase) var scenePhase
     
     var body: some Scene {
         WindowGroup {
-            MainView(hadLaunched: $hadLaunched)
+            ContentView()
+                .environmentObject(monitor)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(txtComplVM)
         }

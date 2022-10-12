@@ -1,5 +1,5 @@
 //
-//  GenTextDetailView.swift
+// StoryListDetailView.swift
 //  Jottr
 //
 //  Created by Kenneth Gutierrez on 9/28/22.
@@ -8,7 +8,7 @@
 import CoreData
 import SwiftUI
 
-struct ListDetailView: View {
+struct StoryListDetailView: View {
     // MARK: Properties
     
     let story: Story
@@ -35,7 +35,7 @@ struct ListDetailView: View {
         TextEditorView(title: $viewModel.title, text: $viewModel.sessionStory, placeholder: "")
             .onAppear {
                 self.viewModel.title = story.wrappedTitle
-                self.viewModel.sessionStory = story.wrappedSessionStory
+                self.viewModel.sessionStory = story.wrappedComplStory
             }
             .focused($isInputActive)
             .padding([.leading, .top, .trailing,])
@@ -74,10 +74,12 @@ struct ListDetailView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if isInputActive {
                         Button {
-                            txtComplVM.getTextResponse(moderated: false, sessionStory: viewModel.sessionStory)
                             save()
                         } label: {
                             Image(systemName: "arrow.up.circle.fill") //chevron.compact.down
+                        }
+                        .task {
+                            await txtComplVM.getTextResponse(moderated: false, sessionStory: viewModel.sessionStory)
                         }
                         .buttonStyle(SendButton())
                         .padding()
@@ -104,15 +106,18 @@ struct ListDetailView: View {
         //update the saved story
         moc.performAndWait {
             story.title = self.viewModel.title
-            story.sessionStory = self.viewModel.sessionStory
+            story.complStory = self.viewModel.sessionStory
             
-            do {
-                if moc.hasChanges {
+            if moc.hasChanges {
+                do {
                     try moc.save()
+                } catch {
+                    // Show some error here
+                    debugPrint("\(error.localizedDescription)")
                 }
-            } catch {
-                print(error.localizedDescription)
             }
+            
+//            PersistenceController.shared.saveContext()
         }
         // cant update this view :(
         self.viewModel.sessionStory = txtComplVM.primary.text
@@ -124,12 +129,17 @@ struct ListDetailView: View {
         // delete from in memory storage
         moc.delete(story)
         
-        // write the changes out to persistent storage
-        do {
-            try moc.save()
-        } catch {
-            debugPrint(error.localizedDescription)
+        if moc.hasChanges {
+            do {
+                try moc.save()
+            } catch {
+                // Show some error here
+                debugPrint("\(error.localizedDescription)")
+            }
         }
+        
+        // write the changes out to persistent storage
+//        PersistenceController.shared.saveContext()
         
         // hide current view
         dismissDetailView()

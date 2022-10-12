@@ -7,29 +7,35 @@
 
 import Foundation
 
-struct Parameters: Encodable {
+struct Parameters: Codable {
 //    let model: String
     let prompt: String
     let maxTokens: Int
-    let temperature: Int
-//    let topP: Int
+    let temperature: Double
+    let topP: Double
+    let echo: Bool
+    let presencePenalty: Double
+    let frequencyPenalty: Double
 //    let n: Int
 //    let stream: Bool
 //    let logprobs: Int
 //    let stop: String
-    let user: String // = UUID().uuidString
+//    let user: String // = UUID().uuidString
     
     enum CodingKeys: String, CodingKey {
 //        case model
         case prompt
         case maxTokens = "max_tokens"
         case temperature
-//        case topP = "top_p"
+        case topP = "top_p"
+        case echo
+        case presencePenalty = "presence_penalty"
+        case frequencyPenalty = "frequency_penalty"
 //        case n
 //        case stream
 //        case logprobs
 //        case stop
-        case user
+//        case user
     }
 }
 /*
@@ -40,19 +46,4 @@ struct Parameters: Encodable {
 
 /*
  If using endpoint https://api.openai.com/v1/completions \ for choosing the model then {"model": "text-davinci-002", "prompt": "Say this is a test", "temperature": 0, "max_tokens": 6}
- */
-
-/*
- {
-   "model": "text-davinci-002",
-   "prompt": "Say this is a test",
-   "max_tokens": 6,
-   "temperature": 0,
-   "top_p": 1,
-   "n": 1,
-   "stream": false,
-   "logprobs": null,
-   "stop": "\n"
- }
-
  */

@@ -5,22 +5,20 @@
 //  Created by Kenneth Gutierrez on 8/29/22.
 //
 
+import Combine
 import Foundation
+import SwiftUI
 
-class TxtComplViewModel: ObservableObject {
-    enum LoadingAPIState {
-        case loading
-        case loaded
-        case failed(Error)
-    }
-    
-    @Published private(set) var loadingAPIState = LoadingAPIState.loaded
-    
-    @Published var title: String = ""
-    @Published var sessionPrompt: String = ""
-    @Published var sessionStory = [SessionStory]()
-    @Published var setTheme: CommonTheme = .custom
-    @Published var setGenre: CommonGenre = .fantasy
+@MainActor class TxtComplViewModel: ObservableObject {
+//    @Published private(set) var state = State.idle
+    @Published var title: String
+    @Published var promptLoader: String
+    @Published var sessionStory: [SessionStory]
+    @Published var setTheme: CommonTheme
+    @Published var setGenre: CommonGenre
+    @Published var loading: Bool
+    @Published var failed: Bool
+    @Published var errorMessage: String = ""
     
     var primary: SessionStory {
         get {
@@ -32,16 +30,20 @@ class TxtComplViewModel: ObservableObject {
         set(newStory) {
             sessionStory = [newStory]
         }
-        
-        // unwrap a optional array, if array doesn't have a 0th index then init an empty text
-//        guard let unwrappedText = textCompletion[safe: 0] else {
-//            return Texts.init(id: UUID(), text: "", fromUser: false)
-//        }
-//        return unwrappedText
     }
     
-    func getTextResponse(moderated: Bool = true, sessionStory: String) {
-        loadingAPIState = .loading
+    init() {
+        self.title = ""
+        self.promptLoader = ""
+        self.sessionStory = [SessionStory]()
+        self.setTheme = .custom
+        self.setGenre = .fantasy
+        self.loading = false
+        self.failed = false
+    }
+    
+    func getTextResponse(moderated: Bool, sessionStory: String) async {
+        loading.toggle()
         
         var promptText: String = ""
         if sessionStory.isEmpty {
@@ -50,32 +52,36 @@ class TxtComplViewModel: ObservableObject {
             promptText = sessionStory
         }
         
-        handlePromptResponse(withModeration: moderated, textForPrompt: promptText)
+        do {
+            try await handleResponse(withModeration: moderated, textForPrompt: promptText)
+        } catch let error as CustomError {
+            loading.toggle()
+            failed.toggle()
+            switch error {
+            case .failCodableResponse:
+                errorMessage = CustomError.failCodableResponse.stringValue()
+            default:
+                errorMessage = error.localizedDescription
+                break
+            }
+        } catch {
+            debugPrint(error)
+        }
     }
     
     // handles the return data from OpenAI API
-    func handlePromptResponse(withModeration: Bool, textForPrompt: String) {
-        if !withModeration {
-            OpenAIConnector.processPrompt(prompt: textForPrompt, completionHandler: handlePromptResults(stringResults:))
-        } else if withModeration {
-            OpenAIConnector.processModeratePrompt(prompt: textForPrompt, completionHandler: handlePromptResults(stringResults:))
+    func handleResponse(withModeration: Bool, textForPrompt: String) async throws {
+        let openaiResponse = await OpenAIConnector.loadText(with: withModeration, sessionPrompt: textForPrompt)
+        
+        guard let data = openaiResponse else {
+            throw CustomError.failCodableResponse
         }
-    }
-    
-    func handlePromptResults(stringResults: Result<OpenAIResponse?, Error>) {
-        switch stringResults {
-        case .success(let data):
-            guard let data = data else {
-                return
-            }
-            let newText = data.choices[0].completionText
-            DispatchQueue.main.async {
-                self.appendToStory(sessionStory: newText)
-                self.loadingAPIState = .loaded
-            }
-        case .failure(let error):
-            loadingAPIState = .failed(error)
-        }
+        let newText = data.choices[0].completionText
+        self.appendToStory(sessionStory: newText)
+        loading.toggle()
+        //        DispatchQueue.main.async {
+        //            self.state = .loaded(completedText) no longer need DispatchQueue weil using MainActor
+        //        }
     }
     
     func promptDesign(_ mainTheme: String = "", _ storyPrompt: String) -> String {
@@ -89,6 +95,10 @@ class TxtComplViewModel: ObservableObject {
         }
         
         let prompt = """
+        Topic: Breakfast
+        Two-Sentence Horror Story: He always stops crying when I pour the milk on his cereal. I just have to remember not to
+        let him see his face on the carton.
+        
         Topic: \(theTheme)
         Seventy-Sentence \(theGenre) Story: \(storyPrompt)
         """
@@ -99,7 +109,7 @@ class TxtComplViewModel: ObservableObject {
     func appendToStory(sessionStory: String) {
         if self.sessionStory.isEmpty {
             // concatenate the next part of the generated story onto the existing story
-            self.primary.text += sessionPrompt + sessionStory
+            self.primary.text += promptLoader + sessionStory
         } else {
             self.primary.text += sessionStory
         }

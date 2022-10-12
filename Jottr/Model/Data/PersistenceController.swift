@@ -23,7 +23,7 @@ class PersistenceController: ObservableObject {
         story.theme = "Redemption"
         story.title = "Test Title"
         story.sessionPrompt = "Test Prompt"
-        story.sessionStory = "Test Story"
+        story.complStory = "Test Story"
         
         return controller
     }()

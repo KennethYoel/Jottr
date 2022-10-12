@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 extension Story {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Story> {
         return NSFetchRequest<Story>(entityName: "Story")
     }
@@ -20,7 +19,7 @@ extension Story {
     @NSManaged public var theme: String?
     @NSManaged public var title: String?
     @NSManaged public var sessionPrompt: String?
-    @NSManaged public var sessionStory: String?
+    @NSManaged public var complStory: String?
     
     /*
      adding computed properties that help us access the optional values safely, while also letting us store your nil coalescing
@@ -40,12 +39,9 @@ extension Story {
     public var wrappedSessionPrompt: String {
         sessionPrompt ?? "Unkown Prompt"
     }
-    public var wrappedSessionStory: String {
-        sessionStory ?? "Unkown Story"
+    public var wrappedComplStory: String {
+        complStory ?? "Unkown Story"
     }
-
 }
 
-extension Story : Identifiable {
-    
-}
+extension Story : Identifiable { }

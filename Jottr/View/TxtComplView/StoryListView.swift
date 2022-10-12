@@ -16,11 +16,13 @@ struct StoryListView: View {
     @FetchRequest(sortDescriptors: []) var stories: FetchedResults<Story>
     
     @State private var isShareViewPresented: Bool = false
-    @State private var isShowingLoginScreen = false
-    @State private var isShowingStoryEditorScreen = false
-    @State private var isShowingFeedbackScreen = false
-    @State private var isShowingSettingsScreen = false
+    @State private var isShowingLoginScreen: Bool = false
+    @State private var isShowingStoryEditorScreen: Bool = false
+    @State private var isShowingFeedbackScreen: Bool = false
+    @State private var isShowingSettingsScreen: Bool = false
+    @State private var isShowingSearchScreen: Bool = false
     @State private var isActive: Bool = false
+    var isRecentList: Bool = false
     
     // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
     static let taskDateFormat: DateFormatter = {
@@ -40,19 +42,14 @@ struct StoryListView: View {
                  views inside the ForEach.
                  */
                 ForEach(stories) { story in
-                    /*
-                     All the properties of our Core Data entity are optional, which
-                     means we need to make heavy use of nil coalescing in order to
-                     make our code work.
-                     */
                     NavigationLink {
-                        ListDetailView(story: story)
+                        StoryListDetailView(story: story)
                     } label: {
                         VStack(alignment: .leading) {
                             Text(story.wrappedTitle)
                                 .font(.system(.headline, design: .serif))
                             
-                            Text(story.wrappedSessionStory)
+                            Text(story.wrappedComplStory)
                                 .foregroundColor(.secondary)
                                 .font(.system(.subheadline, design: .serif))
                                 // limit the amount of text shown in each item in the list
@@ -73,20 +70,59 @@ struct StoryListView: View {
             }, content: {
                 ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
             })
-            //.fullScreenCover
         } // Complete Works -> Opera Omnia
-        .transition(.opacity)
-        .navigationTitle("Collection")
-        .toolbar {
-            LibraryToolbar(showingStoryEditorScreen: $isShowingStoryEditorScreen, showingLoginScreen: $isShowingLoginScreen, showingFeedbackScreen: $isShowingFeedbackScreen, showingSettingsScreen: $isShowingSettingsScreen)
-        }
         .fullScreenCover(isPresented: $isShowingStoryEditorScreen, content: {
             NavigationView {
                 StoryEditorView()
             }
         })
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
-//        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+        .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+        .navigationTitle("Collection")
+        .toolbar { storyListToolbar }
+        .magnifyingGlass(show: $isShowingSearchScreen)
+    }
+    
+//    var listOfStories: FetchedResults<Story> {
+//        if !isRecentList {
+//            // manned to do a fetch search to return the last seven day.
+//            return stories[0].creationDate
+//        } else {
+//            return stories
+//        }
+//    }
+    
+    var storyListToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button {
+                isShowingStoryEditorScreen.toggle()
+            } label: {
+                Label("New Story", systemImage: "square.and.pencil")
+            }
+            
+            Menu {
+                Button {
+                    isShowingLoginScreen.toggle()
+                } label: {
+                    Label("Login", systemImage: "lanyardcard")
+                }
+                
+                Button {
+                    isShowingFeedbackScreen.toggle()
+                } label: {
+                    Label("Feedback", systemImage: "pencil.and.outline")
+                }
+                
+                Button {
+    //                        showingImagePicker.toggle()
+                } label: {
+                    Text("Settings")
+                    Image(systemName: "slider.horizontal.3")
+                }
+            } label: {
+                 Image(systemName: "gearshape.2")
+            }
+        }
     }
     
     func deleteStory(at offsets: IndexSet) {

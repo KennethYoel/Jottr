@@ -5,6 +5,7 @@
 //  Created by Kenneth Gutierrez on 8/10/22.
 //
 
+import Combine
 import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -44,20 +45,12 @@ class OpenAIConnector {
             switch self {
             case .daVinciEngine:
                 return Endpoints.base + Endpoints.daVinciPath
-            // specifies the maximum number of StudentLocation objects to return in the JSON response:
             case .curieEngine:
                 return Endpoints.base + Endpoints.curiePath
-            // use this parameter with limit to paginate through results:
             case .babbageEngine:
                 return Endpoints.base + Endpoints.babbagePath
-            /*
-             a comma-separate list of key names that specify the sorted order of the results:
-             Prefixing a key name with a negative sign reverses the order (default order is ascending)
-             such as -updatedAt:
-             */
             case .adaEngine:
                 return Endpoints.base + Endpoints.adaPath
-            // a unique key (user ID). Gets only student locations with a given user ID:
             case .openAIModeration:
                 return Endpoints.base + Endpoints.openAIModerationPath
             }
@@ -81,132 +74,118 @@ class OpenAIConnector {
         guard let value = plist?.object(forKey: "API_KEY") as? String else {
           fatalError("Couldn't find key 'API_KEY' in 'OpenAI-Info.plist'.")
         }
+        if (value.starts(with: "_")) {
+            fatalError("Register for a OpenAI developer account and get an API.")
+        }
+                     
         return value
       }
     }
     
-    // MARK: Helper Methods for API Requests
+    // MARK: Methods
     
-    class func executeRequest(request: URLRequest, withSessionConfig sessionConfig: URLSessionConfiguration?) -> Data? {
-        let semaphore = DispatchSemaphore(value: 0)
+    var urlSession = URLSession.shared
+    
+    class func resolveDemoURL() -> URL {
+        var url: URL!
+        if let unwrappedUrl = Bundle.main.url(forResource: "openairesponse", withExtension: "json") {
+            url = unwrappedUrl
+        }
+        return url
+    }
+    
+    class func executeRequest(from url: URL, sessionPrompt: String = "", textToClassify: String = "", moderated: Bool, withSessionConfig sessionConfig: URLSessionConfiguration?) async -> Data? {
         let session: URLSession
+        
         if (sessionConfig != nil) {
             session = URLSession(configuration: sessionConfig!)
         } else {
             session = URLSession.shared
         }
-        var requestData: Data?
-        let task = session.dataTask(with: request as URLRequest, completionHandler:{ (data: Data?, response: URLResponse?, error: Error?) -> Void in
-            if error != nil {
-                print("error: \(error!.localizedDescription): \(error!.localizedDescription)")
-            } else if data != nil {
-                requestData = data
-            }
-            
-            print("Semaphore signalled")
-            semaphore.signal()
-        })
-        task.resume()
         
-        // Handle async with semaphores. Max wait of 10 seconds
-        let timeout = DispatchTime.now() + .seconds(20)
-        print("Waiting for semaphore signal")
-        let retVal = semaphore.wait(timeout: timeout)
-        print("Done waiting, obtained - \(retVal)")
-        return requestData
-    }
-    
-    class func processPrompt(prompt: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
-        var urlRequest: URLRequest!
+        var request = URLRequest(url: url) //Endpoints.daVinciEngine.url
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
         
-        resolveURL(sessionPrompt: prompt) { result in
-            switch result {
-            case .success(let urlData):
-                urlRequest = urlData
-            case .failure(let error):
-                completionHandler(.failure(error))
+        var httpBodyJson: Data!
+        if moderated {
+            let httpBody = ParametersModerated(input: textToClassify)
+            guard let encodedHttpBody = try? JSONEncoder().encode(httpBody) else {
+                debugPrint("Failed to encode request")
+                return nil
             }
+            httpBodyJson = encodedHttpBody
+        } else {
+            let httpBody = Parameters(prompt: sessionPrompt, maxTokens: 100, temperature: 0.6, topP: 1.0, echo: false, presencePenalty: 0.0, frequencyPenalty: 0.5)
+            guard let encodedHttpBody = try? JSONEncoder().encode(httpBody) else { // error with casting from one to another
+                debugPrint("Failed to encode request")
+                return nil
+            }
+            httpBodyJson = encodedHttpBody
+        }
+       
+        var readings: Data!
+        do {
+            let (data, _) = try await session.upload(for: request, from: httpBodyJson)
+            // handle the result
+            readings = data
+        } catch let error as NSError { /* handle if error can be casted into an `NSError` */
+            print("error description: \(error.localizedDescription)")
+            print("error domain: \(error.domain)")
+            print("error code: \(error.code)")
+            print("error user info: \(error.userInfo)")
         }
         
-        if let requestData = executeRequest(request: urlRequest, withSessionConfig: nil) {
+        return readings
+    }
+    
+    class func loadText(with moderation: Bool, sessionPrompt: String) async -> OpenAIResponse? {
+        var dataResults: OpenAIResponse!
+        var ResponseData: OpenAIResponse!
+        
+        if let requestData = await executeRequest(from: Endpoints.daVinciEngine.url, sessionPrompt: sessionPrompt, moderated: false, withSessionConfig: nil) {
             let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
-            debugPrint(jsonStr)
+            debugPrint("\(jsonStr)")
             
             decodeJson(jsonString: jsonStr, responseType: OpenAIResponse.self) { result in
                 switch result {
                 case .success(let data):
-                    completionHandler(.success(data))
+                    ResponseData = data
+                    debugPrint(data ?? "No results")
                 case .failure(let error):
-                    completionHandler(.failure(error))
+                    debugPrint("Error with loadText: \(error.localizedDescription)")
                 }
             }
-        }
-    }
-    
-    // before returning text checks first if content is not prohibited
-    class func processModeratePrompt(prompt: String, completionHandler: @escaping (Result<OpenAIResponse?, Error>) -> Void) {
-        var urlRequest: URLRequest!
-        
-        resolveURL(sessionPrompt: prompt) { result in
-            switch result {
-            case .success(let urlData):
-                urlRequest = urlData
-            case .failure(let error):
-                completionHandler(.failure(error))
-            }
-        }
-        
-        if let requestData = executeRequest(request: urlRequest, withSessionConfig: nil) {
-            let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
-            debugPrint(jsonStr)
             
-            decodeJson(jsonString: jsonStr, responseType: OpenAIResponse.self) { [self] result in
-                switch result {
-                case .success(let data):
-                    guard let data = data else { return }
-                    requestModeration(textToClassify: data.choices[0].completionText) { result in
-                        switch result {
-                        case .success(let flag):
-                            var textOutput: OpenAIResponse!
-                            // if OpenAI finds the text to be appropriate then return text else don't show it
-                            if flag == false {
-                                textOutput = data
-                            } else {
-                                // need to add a method to show a text stating prohibited content.
-                                debugPrint("Unable to show prohibited content: \(data)")
-                            }
-                            completionHandler(.success(textOutput))
-                        case .failure(let error):
-                            debugPrint("\(error.localizedDescription)")
-                        }
+            if moderation {
+                if let flag = await requestModeration(classifyText: ResponseData.choices[0].completionText) {
+                    // if OpenAI finds the text to be appropriate then return text else don't show it
+                    if flag == false {
+                        dataResults = ResponseData
+                    } else {
+                        // need to add a method to show a text stating prohibited content.
+                        print("Unable to show prohibited content: \(String(describing: ResponseData))")
                     }
-                case .failure(let error):
-                    completionHandler(.failure(error))
+                } else {
+                    debugPrint("Error with requestModeration output.")
                 }
+            } else {
+                dataResults = ResponseData
             }
+            
+        } else {
+            debugPrint("Error with loadText.")
         }
+        
+        return dataResults
     }
     
     // The moderation endpoint can be used to detect whether text generated by the API violates OpenAI's content policy.
-    class func requestModeration(textToClassify: String, completionHandler: @escaping (Result<Bool, Error>) -> Void){
-        var request = URLRequest(url: Endpoints.openAIModeration.url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
-        let httpBody: [String: Any] = [
-            "input" : textToClassify
-        ]
+    class func requestModeration(classifyText: String) async -> Bool! {
+        var flaggedResults: Bool!
         
-        var httpBodyJson: Data!
-        
-        do {
-            httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
-        } catch {
-            debugPrint("Unable to convert to JSON \(error)")
-        }
-        request.httpBody = httpBodyJson
-        
-        if let requestData = executeRequest(request: request, withSessionConfig: nil) {
+        if let requestData = await executeRequest(from: Endpoints.openAIModeration.url, textToClassify: classifyText, moderated: true, withSessionConfig: nil) {
             let jsonStr = String(data: requestData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
             debugPrint(jsonStr)
             
@@ -220,42 +199,16 @@ class OpenAIConnector {
                         // prints to console which category the content violated
                         print("The prohibited categories: \(String(describing: moderatedCategories))")
                     }
-                    completionHandler(.success(isFlagged.results[0].flagged))
+                    flaggedResults = isFlagged.results[0].flagged
                 case .failure(let error):
-                    completionHandler(.failure(error))
+                    debugPrint("Error with requestModeration: \(error.localizedDescription)")
                 }
             }
+        } else {
+            debugPrint("Error with requestModeration.")
         }
-    }
-    
-    class func resolveURL(sessionPrompt: String, completionHandler: @escaping (Result<URLRequest?, Error>) -> Void) {
-        var request = URLRequest(url: Endpoints.daVinciEngine.url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(self.openAIKey)", forHTTPHeaderField: "Authorization")
-        let httpBody: [String: Any] = [
-            "prompt": sessionPrompt,
-            "max_tokens": 100,
-            "temperature": 0.6, // float from 0 to 1, generally recommend altering this or top_p but not both.
-            "top_p": 1.0, // An alternative to sampling with temperature, called nucleus sampling.
-//            "n": 1, // How many completions to generate for each prompt.
-//            "stop": "\n" // Up to 4 sequences where the API will stop generating further tokens.
-            "echo": false, // Concatenate the prompt and the completion text (which the API will do for you if you set the echo parameter to true)
-            "presence_penalty": 0.0,
-            "frequency_penalty": 0.5
-        ]
         
-        var httpBodyJson: Data!
-        
-        do {
-            httpBodyJson = try JSONSerialization.data(withJSONObject: httpBody, options: .prettyPrinted)
-        } catch {
-            completionHandler(.failure(error))
-            debugPrint("Unable to convert to JSON \(error)")
-        }
-        request.httpBody = httpBodyJson
-        
-        completionHandler(.success(request))
+        return flaggedResults
     }
     
     class func decodeJson<ResponseType: Decodable>(jsonString: String, responseType: ResponseType.Type, completionHandler: @escaping (Result<ResponseType?, Error>) -> Void) {

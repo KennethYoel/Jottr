@@ -18,11 +18,11 @@ struct EditorToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             if !showingKeyboard {
-//                Button {
-//                    newStoryEditorScreen.toggle()
-//                } label: {
-//                    Label("New Story", systemImage: "square.and.pencil")
-//                }
+                Button {
+                    showingPromptEditorScreen.toggle()
+                } label: {
+                    Label("Prompt Editor", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
                 
                 Menu {
                     Button {
@@ -35,12 +35,6 @@ struct EditorToolbar: ToolbarContent {
                         showingShareView.toggle()
                     } label: {
                         Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    
-                    Button {
-                        showingPromptEditorScreen.toggle()
-                    } label: {
-                        Label("Prompt Editor", systemImage: "doc.badge.gearshape")
                     }
                 } label: {
                      Image(systemName: "ellipsis.circle")
