@@ -7,6 +7,7 @@
 
 import Combine
 import CoreData
+import Foundation
 import SwiftUI
 
 struct PromptEditorView: View {
@@ -14,27 +15,28 @@ struct PromptEditorView: View {
     
     @EnvironmentObject var txtComplVM: TxtComplViewModel
     @Environment(\.managedObjectContext) var moc
+    @Environment(\.undoManager) var undoManager
     @Environment(\.dismiss) var dismissPromptEdit
-    //    @Binding var hadLaunched: Bool
     
     @FocusState private var isInputActive: Bool
-    
-//    @StateObject var loginVM = LoginViewModel()
 
     @State private var explainerContent: Explainer = .themeExplainer
     @State private var isShowingThemePopover: Bool = false
     @State private var isShowingPremisePopover: Bool = false
     @State private var isShowingBannedPopover: Bool = false
     
-    @State private var alertUser: Bool = false
-    @State private var message: String = ""
+    @Binding var submitPromptContent: Bool
     
-    @Binding var theme: String // = ""
-    @State private var showingStoryEditorScreen = false
+//    @State private var alertUser: Bool = false
+//    @State private var message: String = ""
+    
+//    @Binding var theme: String // = ""
+//    @State private var showingStoryEditorScreen = false
     
     let themePlaceholder: String = "Type the theme here or pick one ⬇️."
     let premisePlaceholder: String = "Type the premise here..."
     let textLimit = 350
+    
 //    let detector = PassthroughSubject<Void, Never>()
 //    let publisher: AnyPublisher<Void, Never>
     
@@ -57,18 +59,18 @@ struct PromptEditorView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField(themePlaceholder, text: $theme) // use onChange to update the placeholder
+                    TextField(themePlaceholder, text: $txtComplVM.customTheme) // use onChange to update the placeholder
                         .focused($isInputActive)
                         .foregroundColor(.primary)
-                        .font(.custom("Futura", size: 15)) // use either Futura, Caslon, or Johnston-the London underground typeface
-                        .onReceive(Just(theme)) { _ in limitText(textLimit) }
+                        .font(.system(.body, design: .serif)) // use either Futura, Caslon, or Johnston-the London underground typeface
+                        .onReceive(Just(txtComplVM.customTheme)) { _ in limitText(textLimit) }
                     
                     ThemePickerView(themeChoices: $txtComplVM.setTheme)
                             .padding(.trailing)
                 } header: {
                     HStack {
                         Text("_Theme_")
-                            .font(.custom("Futura", size: 17))
+                            .font(.system(.subheadline, design: .serif))
                         
                         // popover with instructional information
                         Button {
@@ -88,12 +90,11 @@ struct PromptEditorView: View {
                 .listRowSeparator(.hidden)
                 
                 Section {
-                    TextEditorView(title: $txtComplVM.title, text: $txtComplVM.primary.text, placeholder: premisePlaceholder)
+                    TextEditorView(text: $txtComplVM.promptLoader, placeholder: premisePlaceholder)
                         .focused($isInputActive)
                         .foregroundColor(.primary)
-                        .font(.custom("Futura", size: 15))
-                        .onReceive(Just(txtComplVM.primary.text)) { _ in limitText(textLimit) }
-//                        .onChange(of: txtComplVM.primary.text) { _ in detector.send() }
+                        .onReceive(Just(txtComplVM.sessionStory)) { _ in limitText(textLimit) }
+//                        .onChange(of: txtComplVM.sessionStory) { _ in detector.send() }
 //                        .onReceive(publisher) { save() }
                     
                     GenrePickerView(genreChoices: $txtComplVM.setGenre)
@@ -101,7 +102,7 @@ struct PromptEditorView: View {
                 } header: {
                     HStack {
                         Text("_Premise_")
-                            .font(.custom("Futura", size: 17))
+                            .font(.system(.subheadline, design: .serif))
 
                         // popover with instructional information
                         Button {
@@ -118,56 +119,72 @@ struct PromptEditorView: View {
                         }
                     }
                 }
-//                if !isInputActive {
-//                    Section {
-//                        HStack {
-//                            Spacer()
-//
-//                            Button {
-                               // TODO: need to make sure this is added once, maybe use boolean
-//                                dismissPromptEdit()
-//                                let text = textGeneration.promptDesign(theme, textGeneration.primary.text)
-//                                textGeneration.getTextResponse(moderated: false, sessionStory: text)
-//                                showingStoryEditorScreen.toggle()
-//                                UserDefaults.standard.setValue(true, forKey: "hadLaunched")
-//                            } label: {
-//                                Image(systemName: "arrow.up.circle.fill")
-//                            }
-//                            .buttonStyle(SendButton())
-//                        }
-//                    }
-//                }
-            }
-//            .alert(title, isPresented: $alertUser, presenting: message) {_ in
-//                Button("OK") {}
-//            }
-            .transition(.opacity)
-            .navigationTitle("Prompt Editor")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        dismissPromptEdit()
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                    }
-                    .buttonStyle(SendButton())
-                    .padding()
-                }
                 
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    
-                    Button {
-                        hideKeyboardAndSave()
-                    } label: {
-                        Image(systemName: "keyboard.chevron.compact.down")
+                Section {
+                    HStack {
+                        Spacer()
+                        
+                        Text("Add Prompt")
+                            .font(.system(.subheadline, design: .serif))
+                        
+                        Spacer()
+                        
+                        Button(action: addPrompt, label: {
+                            Image(systemName: "plus.square.on.square")
+                                .font(.system(.subheadline))
+                            
+                        })
+                            .padding()
+                            .buttonStyle(CustomButton())
+                        
+                        Spacer()
                     }
                 }
+            }
+            .navigationTitle("Prompt Editor")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                topPrincipleToolbar
+                keyboardToolbar
             }
         }
     }
     
+    var topPrincipleToolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button("Done", action: {
+                dismissPromptEdit()
+            })
+                .buttonStyle(.plain)
+//            Image(systemName: "chevron.compact.down")
+//                .font(.title)
+//                .padding(.top)
+        }
+    }
+    
+    var keyboardToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            if let undoManager = undoManager {
+                Button(action: undoManager.undo, label: { Label("Undo", systemImage: "arrow.uturn.backward") })
+                    .disabled(!undoManager.canUndo)
+                    .padding(.trailing)
+
+                Button(action: undoManager.redo, label: { Label("Redo", systemImage: "arrow.uturn.forward") })
+                    .disabled(!undoManager.canRedo)
+            }
+            
+            Spacer()
+        
+            Button(action: hideKeyboardAndSave, label: { Image(systemName: "keyboard.chevron.compact.down") })
+        }
+    }
+    
     // MARK: Helper Methods
+    
+    private func addPrompt() {
+        submitPromptContent = true
+        dismissPromptEdit()
+    }
     
     private func hideKeyboardAndSave() {
         isInputActive = false
@@ -188,9 +205,10 @@ struct PromptEditorView: View {
     
     //    // function to keep text length in limits
     private func limitText(_ upper: Int) {
-        if theme.count & txtComplVM.primary.text.count > upper {
-            theme = String(theme.prefix(upper))
-            txtComplVM.sessionStory[0].text = String(txtComplVM.promptLoader.prefix(upper))
+        if txtComplVM.customTheme.count & txtComplVM.sessionStory.count > upper {
+            txtComplVM.customTheme = String(txtComplVM.customTheme.prefix(upper))
+            txtComplVM.sessionStory = String(txtComplVM.promptLoader.prefix(upper))
         }
     }
 }
+

@@ -10,38 +10,37 @@ import Foundation
 import SwiftUI
 
 @MainActor class TxtComplViewModel: ObservableObject {
-//    @Published private(set) var state = State.idle
-    @Published var title: String
-    @Published var promptLoader: String
-    @Published var sessionStory: [SessionStory]
-    @Published var setTheme: CommonTheme
+    @Published var promptLoader: String = ""
+    // use ... private(set) var ... to ensure only the class itself can write to this value, reading can be done by anyone
+    @Published var sessionStory: String = ""
+    @Published var setTheme: CommonTheme = .custom
     @Published var customTheme: String = ""
-    @Published var setGenre: CommonGenre
-    @Published var loading: Bool
-    @Published var failed: Bool
+    @Published var setGenre: CommonGenre = .fantasy
+    @Published var loading: Bool = false
+    @Published var failed: Bool = false
     @Published var errorMessage: String = ""
     
-    var primary: SessionStory {
-        get {
-            if sessionStory.isEmpty {
-                return SessionStory.init(id: UUID(), text: "")
-            }
-            return sessionStory[0]
-        }
-        set(newStory) {
-            sessionStory = [newStory]
-        }
-    }
+//    var primary: SessionStory {
+//        get {
+//            if sessionStory.isEmpty {
+//                return SessionStory.init(id: UUID(), text: "")
+//            }
+//            return sessionStory[0]
+//        }
+//        set(newStory) {
+//            sessionStory = [newStory]
+//        }
+//    }
     
-    init() {
-        self.title = ""
-        self.promptLoader = ""
-        self.sessionStory = [SessionStory]()
-        self.setTheme = .custom
-        self.setGenre = .fantasy
-        self.loading = false
-        self.failed = false
-    }
+//    init() {
+//        self.title = ""
+//        self.promptLoader = ""
+//        self.sessionStory = [SessionStory]()
+//        self.setTheme = .custom
+//        self.setGenre = .fantasy
+//        self.loading = false
+//        self.failed = false
+//    }
     
     func generateStory() async {
         var theTheme = ""
@@ -128,30 +127,3 @@ extension Collection where Indices.Iterator.Element == Index {
         return (startIndex <= index && index < endIndex) ? self[index] : nil
     }
 }
-
-//@MainActor class TxtComplViewModel: ObservableObject {
-//    @Published var title: String = ""
-//    @Published var promptLoader: String = ""
-//    @Published var sessionStory: String = "" //[SessionStory] = [SessionStory]()
-//    @Published var setTheme: CommonTheme = .custom
-//    @Published var customTheme: String = ""
-//    @Published var setGenre: CommonGenre = .fantasy
-//    @Published var loading: Bool = false
-//    @Published var failed: Bool = false
-//    @Published var errorMessage: String = ""
-//    @Published private(set) var state = State.idle
-    
-//    var primary: SessionStory {
-//        get {
-//            if sessionStory.isEmpty {
-//                return SessionStory.init(id: UUID(), text: "")
-//            }
-//            return sessionStory[0]
-//        }
-//        set(newStory) {
-//            sessionStory = [newStory]
-//        }
-//    }
-    
-    
-//}

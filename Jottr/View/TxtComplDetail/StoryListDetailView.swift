@@ -5,15 +5,17 @@
 //  Created by Kenneth Gutierrez on 9/28/22.
 //
 
-import CoreData
+import Foundation
 import SwiftUI
 
 struct StoryListDetailView: View {
     // MARK: Properties
     
+    // data stored in the Core Data
     let story: Story
-    // create an object that manages the data(the logic) of ListDetailView layout
-    @StateObject private var viewModel = ViewModel()
+    
+    @StateObject var viewModel = StoryListDetailVM()
+    
     // holds our openai text completion model
     @EnvironmentObject var txtComplVM: TxtComplViewModel
     // holds our Core Data managed object context (so we can delete stuff)
@@ -23,128 +25,71 @@ struct StoryListDetailView: View {
     // holds our undoManager
     @Environment(\.undoManager) var undoManager
     // holds boolean value on whether the txt input field is active
-    @FocusState private var isInputActive: Bool
-   
-    @State private var isShowingPromptEditorScreen: Bool = false
-    @State private var isShowingEditorToolbar: Bool = false
-    @State private var isShareViewPresented: Bool = false
-    // control whether we’re showing the delete confirmation alert or not
-    @State private var showingDeleteAlert = false
+    @FocusState var isInputActive: Bool
+    // create an object that manages the data(the logic) of ListDetailView layout
     
+    @State private var isSearchViewPresented: Bool = false
+
     var body: some View {
-        TextEditorView(title: $viewModel.title, text: $viewModel.sessionStory, placeholder: "")
+        WritingPadView(isLoading: $txtComplVM.loading, pen: $txtComplVM.sessionStory)
             .onAppear {
-                self.viewModel.title = story.wrappedTitle
-                self.viewModel.sessionStory = story.wrappedComplStory
+                self.txtComplVM.sessionStory = story.wrappedComplStory
             }
             .focused($isInputActive)
-            .padding([.leading, .top, .trailing,])
-            .transition(.opacity)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    if let undoManager = undoManager {
-                        Button(action: undoManager.undo) {
-                            Label("Undo", systemImage: "arrow.uturn.backward")
-                        }
-                        .disabled(!undoManager.canUndo)
-
-                        Button(action: undoManager.redo) {
-                            Label("Redo", systemImage: "arrow.uturn.forward")
-                        }
-                        .disabled(!undoManager.canRedo)
-                    }
-                    
-                    Spacer()
-                    
-                    Button {
-                        hideKeyboardAndSave()
-                    } label: {
-                        Image(systemName: "keyboard.chevron.compact.down")
-                    }
+            .fullScreenCover(isPresented: $viewModel.isShowingStoryEditorScreen, content: {
+                NavigationView {
+                    StoryEditorView()
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done", role: .destructive) {
-                        save()
-                        dismissDetailView()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if isInputActive {
-                        Button {
-                            save()
-                        } label: {
-                            Image(systemName: "arrow.up.circle.fill") //chevron.compact.down
-                        }
-                        .task {
-                            await txtComplVM.getTextResponse(moderated: false, sessionStory: viewModel.sessionStory)
-                        }
-                        .buttonStyle(SendButton())
-                        .padding()
-                    }
-                }
-                // newStoryEditorScreen: $isNewStoryEditorScreen.onChange(save),
-                EditorToolbar(showingShareView: $isShareViewPresented, showingPromptEditorScreen: $isShowingPromptEditorScreen, showingKeyboard: _isInputActive)
-            } // the sheet below is shown when isShareViewPresented is true
-            .sheet(isPresented: $isShareViewPresented, onDismiss: {
+            })
+            .sheet(isPresented: $viewModel.isShareViewPresented, onDismiss: { // this is shown when isShareViewPresented is true
                 debugPrint("Dismiss")
             }, content: {
-                ActivityViewController(itemsToShare: ["The Story"]) //[URL(string: "https://www.swifttom.com")!]
+                ActivityViewController(itemsToShare: [storyToShare()]) //[URL(string: "https://www.swifttom.com")!]
             })
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                keyboardToolbar
+                storyListDetailToolbar
+                // newStoryEditorScreen: $isNewStoryEditorScreen.onChange(save),
+            }
+            .disabled(txtComplVM.loading) // when loading users can't interact with this view.
     }
     
-    // MARK: Helper Methods
-    
-    private func hideKeyboardAndSave() {
-        isInputActive = false
-        save()
+    var keyboardToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            if let undoManager = undoManager {
+                Button(action: undoManager.undo, label: { Label("Undo", systemImage: "arrow.uturn.backward") })
+                    .disabled(!undoManager.canUndo)
+                    .padding(.trailing)
+
+                Button(action: undoManager.redo, label: { Label("Redo", systemImage: "arrow.uturn.forward") })
+                    .disabled(!undoManager.canRedo)
+            }
+            Spacer()
+            Button(action: hideKeyboardAndSave, label: { Image(systemName: "keyboard.chevron.compact.down") })
+        }
     }
     
-    private func save() {
-        //update the saved story
-        moc.performAndWait {
-            story.title = self.viewModel.title
-            story.complStory = self.viewModel.sessionStory
-            
-            if moc.hasChanges {
-                do {
-                    try moc.save()
-                } catch {
-                    // Show some error here
-                    debugPrint("\(error.localizedDescription)")
+    var storyListDetailToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            if isInputActive {
+                Button(action: sendToStoryCreator, label: { Image(systemName: "arrow.up.circle.fill") })
+                    .buttonStyle(SendButtonStyle())
+                    .padding()
+            } else {
+                Button(action: launchNewPage, label: { Label("New Story", systemImage: "square.and.pencil") })
+                
+                Menu {
+                    Button(action: exportToFile, label: { Label("Export", systemImage: "arrow.up.doc") })
+                    Button(action: presentShareView, label: { Label("Share", systemImage: "square.and.arrow.up") })
+                } label: {
+                     Image(systemName: "ellipsis.circle")
                 }
             }
-            
-//            PersistenceController.shared.saveContext()
         }
-        // cant update this view :(
-        self.viewModel.sessionStory = txtComplVM.primary.text
-        
-//        dismissDetailView()
-    }
-    
-    func deleteBook() {
-        // delete from in memory storage
-        moc.delete(story)
-        
-        if moc.hasChanges {
-            do {
-                try moc.save()
-            } catch {
-                // Show some error here
-                debugPrint("\(error.localizedDescription)")
-            }
-        }
-        
-        // write the changes out to persistent storage
-//        PersistenceController.shared.saveContext()
-        
-        // hide current view
-        dismissDetailView()
     }
 }
+
 
 //struct GenTextDetailView_Previews: PreviewProvider {
 //    static let moc = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)

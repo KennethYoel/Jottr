@@ -21,7 +21,6 @@ class PersistenceController: ObservableObject {
         story.id = UUID()
         story.genre = "Horror"
         story.theme = "Redemption"
-        story.title = "Test Title"
         story.sessionPrompt = "Test Prompt"
         story.complStory = "Test Story"
         

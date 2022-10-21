@@ -43,3 +43,5 @@ struct EditorToolbar: ToolbarContent {
         }
     }
 }
+
+// EditorToolbar(showingShareView: $isShareViewPresented, showingPromptEditorScreen: $isShowingPromptEditorScreen, showingKeyboard: _isInputActive)

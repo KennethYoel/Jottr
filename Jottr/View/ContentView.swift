@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 enum LoadingState {
-    case notebook, storyList, accountView
+    case notebook, storyList(Bool), storyListDetail(Story)
     
     var stringValue: String {
         switch self {
@@ -17,8 +17,8 @@ enum LoadingState {
             return "notebook"
         case .storyList:
             return "storyList"
-        case .accountView:
-            return "accountView"
+        case .storyListDetail:
+            return "storyListDetail"
         }
     }
 }
@@ -54,10 +54,10 @@ struct ContentView: View {
                         )
                     }
             }
-        case .storyList:
-            StoryListView()
-        case .accountView:
-            AccountView()
+        case .storyList(let showRecentList):
+            StoryListView() //StoryListView(isShowingRecentList: showRecentList)
+        case .storyListDetail(let story):
+            StoryListDetailView(story: story)
         }
     }
 }

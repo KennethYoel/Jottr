@@ -5,6 +5,7 @@
 //  Created by Kenneth Gutierrez on 9/12/22.
 //
 
+import Foundation
 import SwiftUI
 
 struct StoryListView: View {
@@ -22,15 +23,8 @@ struct StoryListView: View {
     @State private var isShowingSettingsScreen: Bool = false
     @State private var isShowingSearchScreen: Bool = false
     @State private var isActive: Bool = false
-    var isRecentList: Bool = false
     
-    // defines a date formatter and uses it to make sure a task date is presented in human-readable form:
-    static let taskDateFormat: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .long
-            return formatter
-        }()
-    let dueDate = Date()
+    var isShowingRecentList: Bool = false
     
     var body: some View {
         VStack {
@@ -39,32 +33,13 @@ struct StoryListView: View {
                  We don’t need to provide an identifier for the ForEach because all
                  Core Data’s managed object class conform to Identifiable
                  automatically, but things are trickier when it comes to creating
-                 views inside the ForEach.
+                 views inside the ForEach. Swift will generate a memoize initializer
+                 for all its struct, memoizer that will accept the parameters of the
+                 struct.
                  */
-                ForEach(stories) { story in
-                    NavigationLink {
-                        StoryListDetailView(story: story)
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(story.wrappedTitle)
-                                .font(.system(.headline, design: .serif))
-                            
-                            Text(story.wrappedComplStory)
-                                .foregroundColor(.secondary)
-                                .font(.system(.subheadline, design: .serif))
-                                // limit the amount of text shown in each item in the list
-                                .lineLimit(3)
-                            
-                            HStack {
-                                Label("Char(s)", systemImage: "text.alignleft")
-                                Text(String(describing: story.creationDate!)) // dueDate, formatter: Self.taskDateFormat
-                                    .font(.system(.caption, design: .serif))
-                            }
-                        }
-                    }
-                } // swipe to delete
-                .onDelete(perform: deleteStory)
-            }  // the sheet below is shown when isShareViewPresented is true
+                // for each story in the array, create a listing row
+                ForEach(listOfStories, content:  StoryListRowView.init).onDelete(perform: deleteStory) // swipe to delete
+            }
             .sheet(isPresented: $isShareViewPresented, onDismiss: {
                 debugPrint("Dismiss")
             }, content: {
@@ -78,21 +53,33 @@ struct StoryListView: View {
         })
         .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
         .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
-        .navigationTitle("Collection")
-        .toolbar { storyListToolbar }
-        .magnifyingGlass(show: $isShowingSearchScreen)
+        .navigationTitle(pageTitle())
+        .toolbar { storyListTopToolbar }
+        .overlay(MagnifyingGlass(showSearchScreen: $isShowingSearchScreen), alignment: .bottomTrailing)
     }
     
-//    var listOfStories: FetchedResults<Story> {
-//        if !isRecentList {
-//            // manned to do a fetch search to return the last seven day.
-//            return stories[0].creationDate
-//        } else {
-//            return stories
-//        }
-//    }
+    var listOfStories: [Story] {
+        var fetchedStories: [Story] = []
+        
+        if !isShowingRecentList {
+            fetchedStories.append(contentsOf: stories)
+            return fetchedStories
+        } else {
+            // filter returns stories from the last seven days.
+            let sortedByDate = stories.filter {
+                guard let unwrappedValue = $0.creationDate else {
+                    return false
+                }
+                return unwrappedValue > (Date.now - 604_800) // 604800 sec. is seven days in seconds
+//                $0.creationDate! > (Date.now - 604_800)
+            }
+            fetchedStories.append(contentsOf: sortedByDate)
+            
+            return fetchedStories
+        }
+    }
     
-    var storyListToolbar: some ToolbarContent {
+    var storyListTopToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
             Button {
                 isShowingStoryEditorScreen.toggle()
@@ -125,7 +112,19 @@ struct StoryListView: View {
         }
     }
     
-    func deleteStory(at offsets: IndexSet) {
+    private func pageTitle() -> String {
+        var title: String!
+        if !isShowingRecentList {
+            title = "Collection"
+        } else {
+            let pastDateResults = (Date.now - 604800).formatted(date: .abbreviated, time: .omitted)
+            title = "From " + pastDateResults
+        }
+        
+        return title
+    }
+    
+    private func deleteStory(at offsets: IndexSet) {
         for offset in offsets {
             let story = stories[offset]
             // delete from in memory storage

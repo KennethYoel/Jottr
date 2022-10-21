@@ -5,6 +5,7 @@
 //  Created by Kenneth Gutierrez on 10/12/22.
 //
 
+import Foundation
 import SwiftUI
 
 struct NoteBookView: View {
@@ -13,33 +14,32 @@ struct NoteBookView: View {
     @EnvironmentObject var txtComplVM: TxtComplViewModel
     @State private var isShowingStoryEditorScreen: Bool = false
     @State private var isShowingLoginScreen: Bool = false
-    @State private var isShowingFeedbackScreen: Bool = false
     @State private var isShowingSearchScreen: Bool = false
     @State private var isShowingStoryListView: Bool = false
+    @State private var isShowingAccountScreen: Bool = false
     @State private var isShowingSettingsScreen: Bool = false
     @State private var isStoryListActive: Bool = false
     @State private var isHidden: Bool = false
     
     var body: some View {
-        Form {
+        List {
             Section {
                 // a link to a list of stories
                 NavigationLink(isActive: $isStoryListActive) {
-                    ContentView(currentView: .storyList)
+                    ContentView(currentView: .storyList(false))
                 } label: {
-                    Label("Your Narratives", systemImage: "archivebox")
+                    Label("Collection", systemImage: "archivebox")
                         .font(.custom("Futura", size: 13))
                 }
-                .isDetailLink(false)
                 .buttonStyle(.plain)
                 
-                // a link to a list of stories written the past seven days
+                // a link to a list of stories written in the past seven days
                 NavigationLink {
-                    ContentView(currentView: .storyList)
+                    ContentView(currentView: .storyList(true))
                 } label: {
                     Label("Recent", systemImage: "deskclock")
                         .font(.custom("Futura", size: 13))
-                }// "as of \(currentDate - 604800, formatter: Self.taskDateFormat)"
+                }
                 .buttonStyle(.plain)
                 
                 // a link to a list of stories the user recently deleted
@@ -61,9 +61,7 @@ struct NoteBookView: View {
                 HStack {
                     Text("INTRODUCTION")
                         .font(.system(.caption, design: .serif))
-                    
                     Spacer()
-                    
                     HideSectionView(isHidden: $isHidden)
                 }
             }
@@ -75,44 +73,51 @@ struct NoteBookView: View {
                 StoryEditorView()
             }
         })
-        .sheet(isPresented: $isShowingLoginScreen) { LoginView() }
+        .fullScreenCover(isPresented: $isShowingAccountScreen) { AccountView() }
         .sheet(isPresented: $isShowingSearchScreen) { SearchView() }
+        .overlay(MagnifyingGlass(showSearchScreen: $isShowingSearchScreen), alignment: .bottomTrailing)
         .navigationTitle("🖋Jottr") //highlighter
-        .toolbar { noteBookToolbar }
-        .magnifyingGlass(show: $isShowingSearchScreen) // add a magnifying glass to view
+        .toolbar { noteBookTopToolbar }
     }
     
-    var noteBookToolbar: some ToolbarContent {
+    // MARK: External Properties
+    // the property will be inline very nicely by the swift optimizer also when the body is re-computed, changed program state for example, swift will recall the properties as needed
+    var noteBookTopToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            Button {
-                isShowingStoryEditorScreen.toggle()
-            } label: {
+            Button(action: showStoryEditor, label: {
                 Label("New Story", systemImage: "square.and.pencil")
-            }
+            })
+                .padding()
+                .buttonStyle(.plain)
             
-            Menu {
-                Button {
-                    isShowingLoginScreen.toggle()
-                } label: {
-                    Label("Login", systemImage: "lanyardcard")
-                }
-                
-                Button {
-                    isShowingFeedbackScreen.toggle()
-                } label: {
-                    Label("Feedback", systemImage: "pencil.and.outline")
-                }
-                
-                Button {
-    //                        showingImagePicker.toggle()
-                } label: {
-                    Text("Settings")
-                    Image(systemName: "slider.horizontal.3")
-                }
-            } label: {
-                 Image(systemName: "gearshape.2")
-            }
+            Button(action: showAccountScreen, label: {
+                Label("Account", systemImage: "ellipsis.circle")
+            })
+                .padding(.trailing)
+                .buttonStyle(.plain)
+            
+//            Menu {
+//                Button(action: showLoginScreen, label: {
+//                    Label("Login", systemImage: "lanyardcard")
+//                })
+//
+//                Button(action: showAccountScreen, label: {
+//                    Label("Account", systemImage: "pencil.and.outline")
+//                })
+//
+//                Button("Settings", action: showSettingsScreen)
+//            } label: {
+//                 Image(systemName: "gearshape.2")
+//            }
         }
+    }
+    
+    private func showStoryEditor() {
+        isShowingStoryEditorScreen.toggle()
+    }
+    
+    private func showAccountScreen() {
+        isShowingAccountScreen.toggle()
     }
 }
 

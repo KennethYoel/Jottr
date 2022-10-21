@@ -17,7 +17,6 @@ extension Story {
     @NSManaged public var creationDate: Date?
     @NSManaged public var genre: String?
     @NSManaged public var theme: String?
-    @NSManaged public var title: String?
     @NSManaged public var sessionPrompt: String?
     @NSManaged public var complStory: String?
     
@@ -27,14 +26,15 @@ extension Story {
      work with-This way the whole rest of your code doesn’t have to worry about Core Data’s optionality, and if you want to
      make changes to default values you can do it in a single file.
      */
+    public var formattedDate: String {
+        // using a date formatter to make sure a task date is presented in human-readable form:
+        creationDate?.formatted(date: .long, time: .shortened) ?? "Unknown Date"
+    }
     public var wrappedGenre: String {
         genre ?? "fantasy"
     }
     public var wrappedTheme: String {
         theme ?? "custom"
-    }
-    public var wrappedTitle: String {
-        title ?? "Unkown Title"
     }
     public var wrappedSessionPrompt: String {
         sessionPrompt ?? "Unkown Prompt"
