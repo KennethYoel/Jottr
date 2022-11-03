@@ -32,6 +32,7 @@
 		572B12ED28A4288000227AB4 /* openairesponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 572B12EC28A4287F00227AB4 /* openairesponse.json */; };
 		5744A7E628DD9EE20058E879 /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5744A7E528DD9EE20058E879 /* GenrePickerView.swift */; };
 		5745669228D3A5840002DB98 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5745669128D3A5840002DB98 /* SearchView.swift */; };
+		574775DC2913BDCE008FEF5B /* LoginView-ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574775DB2913BDCE008FEF5B /* LoginView-ViewModel.swift */; };
 		5749D76328C7507900AC3C2B /* SessionStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76228C7507900AC3C2B /* SessionStory.swift */; };
 		5749D76728C78ED700AC3C2B /* StoryEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5749D76628C78ED700AC3C2B /* StoryEditorView.swift */; };
 		574B4D5928A6552700FC47D8 /* Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 574B4D5828A6552700FC47D8 /* Parameters.swift */; };
@@ -89,6 +90,7 @@
 		572B12EC28A4287F00227AB4 /* openairesponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = openairesponse.json; sourceTree = "<group>"; };
 		5744A7E528DD9EE20058E879 /* GenrePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenrePickerView.swift; sourceTree = "<group>"; };
 		5745669128D3A5840002DB98 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		574775DB2913BDCE008FEF5B /* LoginView-ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginView-ViewModel.swift"; sourceTree = "<group>"; };
 		5749D76228C7507900AC3C2B /* SessionStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStory.swift; sourceTree = "<group>"; };
 		5749D76628C78ED700AC3C2B /* StoryEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryEditorView.swift; sourceTree = "<group>"; };
 		574B4D5828A6552700FC47D8 /* Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parameters.swift; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 				570EFB702902E0A500B360EB /* AccountView-ViewModel.swift */,
 				57FC684928EF0F8000FB2DE8 /* StoryEditorView-ViewModel.swift */,
 				570EFB722902E0D200B360EB /* AppleSignIn-ViewModel.swift */,
+				574775DB2913BDCE008FEF5B /* LoginView-ViewModel.swift */,
 				575F623728D0A85700EFE7C0 /* UIViewController.swift */,
 				5777672F28F6D3AF008C888B /* CustomError-ViewModel.swift */,
 			);
@@ -439,6 +442,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				57C0C71828DB41E6005B7919 /* SendButton.swift in Sources */,
+				574775DC2913BDCE008FEF5B /* LoginView-ViewModel.swift in Sources */,
 				5777673228F6D48D008C888B /* ParametersModerated.swift in Sources */,
 				5775B5DC28E45D1600CAD517 /* StoryListDetailView.swift in Sources */,
 				5745669228D3A5840002DB98 /* SearchView.swift in Sources */,
