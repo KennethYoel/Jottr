@@ -5,6 +5,7 @@
 //  Created by Kenneth Gutierrez on 9/6/22.
 //
 
+import CoreData
 import Foundation
 import SwiftUI
 
@@ -25,6 +26,7 @@ struct StoryEditorView: View {
     @State private var isShowingPromptEditorScreen: Bool = false
     @State private var isShowingEditorToolbar: Bool = false
     @State private var isSubmittingPromptContent: Bool = false
+    @State private var id: UUID = UUID()
 //    @State private var isNewStoryEditorScreen = false
 //    @State var text = NSMutableAttributedString(string: "")
     
@@ -162,18 +164,38 @@ struct StoryEditorView: View {
     }
     
     private func save() {
-        //add a story
-        let newStory = Story(context: moc)
-        newStory.id = UUID()
-        newStory.creationDate = Date()
-        newStory.genre = txtComplVM.setGenre.id
-        newStory.sessionPrompt = txtComplVM.promptLoader
-        newStory.complStory = txtComplVM.sessionStory
+        /*
+         Solution found at:
+         https://stackoverflow.com/questions/26345189/how-do-you-update-a-coredata-entry-that-has-already-been-saved-in-swift
+         */
+        let newStory: Story!
+        
+        let fetchStory: NSFetchRequest<Story> = Story.fetchRequest()
+        fetchStory.predicate = NSPredicate(format: "id = %@", id.uuidString) // create a UUID as a string
+        
+        let results = try? moc.fetch(fetchStory)
+        
+        if results?.count == 0 {
+            // here you are inserting
+            newStory = Story(context: moc)
+         } else {
+            // here you are updating
+             newStory = results?.first
+         }
+        
+        if !txtComplVM.sessionStory.isEmpty {
+            //add a story
+            newStory.id = id
+            newStory.creationDate = Date()
+            newStory.genre = txtComplVM.setGenre.id
+            newStory.sessionPrompt = txtComplVM.promptLoader
+            newStory.complStory = txtComplVM.sessionStory
 
-        if txtComplVM.setTheme.id == "Custom" {
-            newStory.theme = txtComplVM.customTheme
-        } else {
-            newStory.theme = txtComplVM.setTheme.id
+            if txtComplVM.setTheme.id == "Custom" {
+                newStory.theme = txtComplVM.customTheme
+            } else {
+                newStory.theme = txtComplVM.setTheme.id
+            }
         }
 
         if moc.hasChanges {
